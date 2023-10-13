@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Part 2 Recent locations | Osa Conservation: Movement report</title>
+  <meta name="description" content="Part 2 Recent locations | Osa Conservation: Movement report" />
+  <meta name="generator" content="bookdown 0.35 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Part 2 Recent locations | Osa Conservation: Movement report" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Part 2 Recent locations | Osa Conservation: Movement report" />
+  
+  
+  
+
+<meta name="author" content="Chris Beirne" />
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="index.html"/>
+<link rel="next" href="cluster-detection.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+<script src="libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+<link href="libs/bsTable-3.3.7/bootstrapTable.min.css" rel="stylesheet" />
+<script src="libs/bsTable-3.3.7/bootstrapTable.js"></script>
+<script src="libs/htmlwidgets-1.6.2/htmlwidgets.js"></script>
+<script src="libs/plotly-binding-4.10.2/plotly.js"></script>
+<script src="libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="libs/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
+<link href="libs/leaflet-1.3.1/leaflet.css" rel="stylesheet" />
+<script src="libs/leaflet-1.3.1/leaflet.js"></script>
+<link href="libs/leafletfix-1.0.0/leafletfix.css" rel="stylesheet" />
+<script src="libs/proj4-2.6.2/proj4.min.js"></script>
+<script src="libs/Proj4Leaflet-1.0.1/proj4leaflet.js"></script>
+<link href="libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet" />
+<script src="libs/leaflet-binding-2.2.0/leaflet.js"></script>
+<script src="libs/leaflet-providers-1.13.0/leaflet-providers_1.13.0.js"></script>
+<script src="libs/leaflet-providers-plugin-2.2.0/leaflet-providers-plugin.js"></script>
+<link href="libs/lfx-fullscreen-1.0.2/lfx-fullscreen-prod.css" rel="stylesheet" />
+<script src="libs/lfx-fullscreen-1.0.2/lfx-fullscreen-prod.js"></script>
+
+
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Osa Conservation: Tracker Checker</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Device Status</a></li>
+<li class="chapter" data-level="2" data-path="recent-locations.html"><a href="recent-locations.html"><i class="fa fa-check"></i><b>2</b> Recent locations</a></li>
+<li class="chapter" data-level="3" data-path="cluster-detection.html"><a href="cluster-detection.html"><i class="fa fa-check"></i><b>3</b> Cluster detection</a></li>
+<li class="chapter" data-level="4" data-path="roost-and-nest-sites.html"><a href="roost-and-nest-sites.html"><i class="fa fa-check"></i><b>4</b> Roost and nest sites</a>
+<ul>
+<li class="chapter" data-level="4.0.1" data-path="roost-and-nest-sites.html"><a href="roost-and-nest-sites.html#nighttime-roost-movement-summary"><i class="fa fa-check"></i><b>4.0.1</b> Nighttime roost movement summary</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="hardware-function-and-settings.html"><a href="hardware-function-and-settings.html"><i class="fa fa-check"></i><b>5</b> Hardware function and settings</a>
+<ul>
+<li class="chapter" data-level="5.0.1" data-path="hardware-function-and-settings.html"><a href="hardware-function-and-settings.html#battery-status"><i class="fa fa-check"></i><b>5.0.1</b> Battery status</a></li>
+<li class="chapter" data-level="5.0.2" data-path="hardware-function-and-settings.html"><a href="hardware-function-and-settings.html#location-accuracy"><i class="fa fa-check"></i><b>5.0.2</b> Location accuracy</a></li>
+<li class="chapter" data-level="5.0.3" data-path="hardware-function-and-settings.html"><a href="hardware-function-and-settings.html#temporal-activity"><i class="fa fa-check"></i><b>5.0.3</b> Temporal activity</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/ChrisBeirne/test_report/" target="blank">Osa Conservation: Tracker Checker</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Osa Conservation: Movement report</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="recent-locations" class="section level1 tabset hasAnchor" number="2">
+<h1><span class="header-section-number">Part 2</span> Recent locations<a href="recent-locations.html#recent-locations" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>The following maps relate to just the last 48 hours of data for actively transmitting vultures, the last 2 weeks of data for actively transmitting mammals.</p>
+<p>We currently have 4 devices transmitting data in ecuador:</p>
+<div class="leaflet html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-8898a34471df034feb3c" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-8898a34471df034feb3c">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}},"fullscreenControl":{"position":"topleft","pseudoFullscreen":false}},"calls":[{"method":"addProviderTiles","args":["CartoDB.PositronNoLabels",null,"Simple",{"errorTileUrl":"","noWrap":false,"detectRetina":false}]},{"method":"addProviderTiles","args":["Esri.WorldImagery",null,"Satellite",{"errorTileUrl":"","noWrap":false,"detectRetina":false}]},{"method":"addProviderTiles","args":["OpenStreetMap.Mapnik",null,"OS",{"errorTileUrl":"","noWrap":false,"detectRetina":false}]},{"method":"addPolylines","args":[[[[{"lng":[-80.0944018,-80.0942422,-80.0943692,-80.09347169999999,-80.0940325],"lat":[-2.0405956,-2.0405266,-2.0410782,-2.0411412,-2.0412172]}]]],null,"Guasmo",{"interactive":true,"className":"","stroke":true,"color":"#30123BFF","weight":3,"opacity":0.3,"fill":false,"fillColor":"#30123BFF","fillOpacity":0.2,"smoothFactor":1,"noClip":false},null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addCircleMarkers","args":[[-2.0405956,-2.0405266,-2.0410782,-2.0411412,-2.0412172],[-80.0944018,-80.0942422,-80.0943692,-80.09347169999999,-80.0940325],2,null,"Guasmo",{"interactive":true,"className":"","stroke":false,"color":"#30123BFF","weight":5,"opacity":0.5,"fill":true,"fillColor":"#30123BFF","fillOpacity":0.3},null,null,["Guasmo <br>Time: 2023-10-12 05:30:47","Guasmo <br>Time: 2023-10-12 06:00:09","Guasmo <br>Time: 2023-10-12 06:30:08","Guasmo <br>Time: 2023-10-12 07:00:07","Guasmo <br>Time: 2023-10-12 07:00:17"],null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addCircleMarkers","args":[-2.0412172,-80.0940325,5,null,"Guasmo",{"interactive":true,"className":"","stroke":false,"color":"#30123BFF","weight":5,"opacity":1,"fill":true,"fillColor":"#30123BFF","fillOpacity":1},null,null,"2023-10-12 07:00:17",null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addMarkers","args":[-2.0412172,-80.0940325,{"iconUrl":{"data":"https://raw.githubusercontent.com/ChrisBeirne/Osa-Conservation-Movement-Ecology-Daily-Report/main/icons/king_small.png","index":0},"iconWidth":38,"iconHeight":40,"iconAnchorX":22,"iconAnchorY":39,"shadowUrl":{"data":"https://raw.githubusercontent.com/ChrisBeirne/Osa-Conservation-Movement-Ecology-Daily-Report/main/icons/vul_small_shadow.png","index":0},"shadowWidth":38,"shadowHeight":30,"shadowAnchorX":4,"shadowAnchorY":39},null,"Guasmo",{"interactive":true,"draggable":false,"keyboard":true,"title":"","alt":"","zIndexOffset":0,"opacity":1,"riseOnHover":false,"riseOffset":250},"Guasmo <br>Time: 2023-10-12 07:00:17 <br>Long: -80.0940325 <br>Lat: -2.0412172",null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addPolylines","args":[[[[{"lng":[-80.28099539999999,-80.281077,-80.2808361,-80.28079630000001,-80.2808345,-80.2807839,-80.2772241,-80.2719201,-80.27453389999999,-80.2808576,-80.2390249,-80.192196,-80.1389729,-80.09397149999999,-80.0771067,-80.0585246,-80.0597739,-80.078327,-80.0734521,-80.0811734,-80.09223780000001,-80.0785528,-80.06149310000001,-80.0779804,-80.09009159999999,-80.0631363,-80.0468632,-80.0833465,-80.09724110000001,-80.1012583,-80.10587870000001,-80.10808470000001,-80.09829569999999,-80.1003137,-80.1063659,-80.1024805,-80.09493260000001,-80.09790150000001,-80.08991229999999,-80.0970746,-80.0957248,-80.1031208,-80.1035447,-80.1044007,-80.1044224,-80.10185439999999,-80.1018512,-80.1023308,-80.0857338,-80.08578919999999,-80.0857638,-80.0865062,-80.0866626,-80.08666909999999,-80.0864126,-80.0868533,-80.0874421,-80.0871425,-80.0858363,-80.0857304,-80.08621050000001,-80.08611449999999,-80.0862474,-80.0865356,-80.0865187,-80.0866869,-80.0993474,-80.0901788,-80.0890989,-80.0891354,-80.08904219999999,-80.0891216,-80.0881897,-80.0881693,-80.08777379999999,-80.0882292,-80.088183,-80.0881105,-80.0881071],"lat":[-2.0615915,-2.0616548,-2.0616174,-2.0615843,-2.0616223,-2.061615,-2.0616775,-2.0511273,-2.0521054,-2.0618414,-2.0845784,-2.0975949,-2.1194539,-2.146797,-2.1608076,-2.1607411,-2.148298,-2.1641395,-2.167849,-2.1491184,-2.153333,-2.1532506,-2.1589254,-2.1451228,-2.1535689,-2.1611657,-2.1692358,-2.1555192,-2.1464608,-2.1419531,-2.1473451,-2.1463168,-2.1394949,-2.1408488,-2.1469251,-2.1493142,-2.1461808,-2.1314056,-2.1396212,-2.1344804,-2.1410862,-2.1351738,-2.1318785,-2.1339169,-2.1339486,-2.143522,-2.1435486,-2.1457491,-2.1423311,-2.1423859,-2.142401,-2.1419535,-2.1419766,-2.1418096,-2.1423656,-2.141831,-2.1420387,-2.1420574,-2.1423349,-2.1423633,-2.1426581,-2.1428561,-2.1424843,-2.1424873,-2.1427342,-2.1426338,-2.15361,-2.1454984,-2.1457766,-2.1457338,-2.1458774,-2.1457874,-2.1436307,-2.1436374,-2.1435067,-2.1437573,-2.1436709,-2.1437085,-2.1437217]}]]],null,"Guayas",{"interactive":true,"className":"","stroke":true,"color":"#1AE4B6FF","weight":3,"opacity":0.3,"fill":false,"fillColor":"#1AE4B6FF","fillOpacity":0.2,"smoothFactor":1,"noClip":false},null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addCircleMarkers","args":[[-2.0615915,-2.0616548,-2.0616174,-2.0615843,-2.0616223,-2.061615,-2.0616775,-2.0511273,-2.0521054,-2.0618414,-2.0845784,-2.0975949,-2.1194539,-2.146797,-2.1608076,-2.1607411,-2.148298,-2.1641395,-2.167849,-2.1491184,-2.153333,-2.1532506,-2.1589254,-2.1451228,-2.1535689,-2.1611657,-2.1692358,-2.1555192,-2.1464608,-2.1419531,-2.1473451,-2.1463168,-2.1394949,-2.1408488,-2.1469251,-2.1493142,-2.1461808,-2.1314056,-2.1396212,-2.1344804,-2.1410862,-2.1351738,-2.1318785,-2.1339169,-2.1339486,-2.143522,-2.1435486,-2.1457491,-2.1423311,-2.1423859,-2.142401,-2.1419535,-2.1419766,-2.1418096,-2.1423656,-2.141831,-2.1420387,-2.1420574,-2.1423349,-2.1423633,-2.1426581,-2.1428561,-2.1424843,-2.1424873,-2.1427342,-2.1426338,-2.15361,-2.1454984,-2.1457766,-2.1457338,-2.1458774,-2.1457874,-2.1436307,-2.1436374,-2.1435067,-2.1437573,-2.1436709,-2.1437085,-2.1437217],[-80.28099539999999,-80.281077,-80.2808361,-80.28079630000001,-80.2808345,-80.2807839,-80.2772241,-80.2719201,-80.27453389999999,-80.2808576,-80.2390249,-80.192196,-80.1389729,-80.09397149999999,-80.0771067,-80.0585246,-80.0597739,-80.078327,-80.0734521,-80.0811734,-80.09223780000001,-80.0785528,-80.06149310000001,-80.0779804,-80.09009159999999,-80.0631363,-80.0468632,-80.0833465,-80.09724110000001,-80.1012583,-80.10587870000001,-80.10808470000001,-80.09829569999999,-80.1003137,-80.1063659,-80.1024805,-80.09493260000001,-80.09790150000001,-80.08991229999999,-80.0970746,-80.0957248,-80.1031208,-80.1035447,-80.1044007,-80.1044224,-80.10185439999999,-80.1018512,-80.1023308,-80.0857338,-80.08578919999999,-80.0857638,-80.0865062,-80.0866626,-80.08666909999999,-80.0864126,-80.0868533,-80.0874421,-80.0871425,-80.0858363,-80.0857304,-80.08621050000001,-80.08611449999999,-80.0862474,-80.0865356,-80.0865187,-80.0866869,-80.0993474,-80.0901788,-80.0890989,-80.0891354,-80.08904219999999,-80.0891216,-80.0881897,-80.0881693,-80.08777379999999,-80.0882292,-80.088183,-80.0881105,-80.0881071],2,null,"Guayas",{"interactive":true,"className":"","stroke":false,"color":"#1AE4B6FF","weight":5,"opacity":0.5,"fill":true,"fillColor":"#1AE4B6FF","fillOpacity":0.3},null,null,["Guayas <br>Time: 2023-10-11 07:00:20","Guayas <br>Time: 2023-10-11 07:30:12","Guayas <br>Time: 2023-10-11 08:00:23","Guayas <br>Time: 2023-10-11 08:30:21","Guayas <br>Time: 2023-10-11 09:00:21","Guayas <br>Time: 2023-10-11 09:30:10","Guayas <br>Time: 2023-10-11 10:00:07","Guayas <br>Time: 2023-10-11 10:30:10","Guayas <br>Time: 2023-10-11 11:00:08","Guayas <br>Time: 2023-10-11 11:10:23","Guayas <br>Time: 2023-10-11 11:20:06","Guayas <br>Time: 2023-10-11 11:30:06","Guayas <br>Time: 2023-10-11 11:40:07","Guayas <br>Time: 2023-10-11 11:50:07","Guayas <br>Time: 2023-10-11 12:00:06","Guayas <br>Time: 2023-10-11 12:10:07","Guayas <br>Time: 2023-10-11 12:20:06","Guayas <br>Time: 2023-10-11 12:30:06","Guayas <br>Time: 2023-10-11 12:40:06","Guayas <br>Time: 2023-10-11 12:50:06","Guayas <br>Time: 2023-10-11 13:00:06","Guayas <br>Time: 2023-10-11 13:10:06","Guayas <br>Time: 2023-10-11 13:20:06","Guayas <br>Time: 2023-10-11 13:30:06","Guayas <br>Time: 2023-10-11 13:40:06","Guayas <br>Time: 2023-10-11 13:50:07","Guayas <br>Time: 2023-10-11 14:00:06","Guayas <br>Time: 2023-10-11 14:10:06","Guayas <br>Time: 2023-10-11 14:20:06","Guayas <br>Time: 2023-10-11 14:30:07","Guayas <br>Time: 2023-10-11 14:40:06","Guayas <br>Time: 2023-10-11 14:50:06","Guayas <br>Time: 2023-10-11 15:00:06","Guayas <br>Time: 2023-10-11 15:00:31","Guayas <br>Time: 2023-10-11 15:25:51","Guayas <br>Time: 2023-10-11 15:30:07","Guayas <br>Time: 2023-10-11 15:40:07","Guayas <br>Time: 2023-10-11 15:50:07","Guayas <br>Time: 2023-10-11 16:00:07","Guayas <br>Time: 2023-10-11 16:10:11","Guayas <br>Time: 2023-10-11 16:20:23","Guayas <br>Time: 2023-10-11 16:30:07","Guayas <br>Time: 2023-10-11 16:40:35","Guayas <br>Time: 2023-10-11 16:50:08","Guayas <br>Time: 2023-10-11 17:00:11","Guayas <br>Time: 2023-10-11 17:20:20","Guayas <br>Time: 2023-10-11 17:30:06","Guayas <br>Time: 2023-10-11 17:40:06","Guayas <br>Time: 2023-10-11 17:50:06","Guayas <br>Time: 2023-10-11 18:00:06","Guayas <br>Time: 2023-10-11 18:10:06","Guayas <br>Time: 2023-10-11 18:30:06","Guayas <br>Time: 2023-10-11 19:00:06","Guayas <br>Time: 2023-10-12 05:30:31","Guayas <br>Time: 2023-10-12 06:00:11","Guayas <br>Time: 2023-10-12 06:30:15","Guayas <br>Time: 2023-10-12 07:00:10","Guayas <br>Time: 2023-10-12 07:00:34","Guayas <br>Time: 2023-10-12 07:30:23","Guayas <br>Time: 2023-10-12 08:00:07","Guayas <br>Time: 2023-10-12 08:30:06","Guayas <br>Time: 2023-10-12 09:00:08","Guayas <br>Time: 2023-10-12 09:30:08","Guayas <br>Time: 2023-10-12 10:00:08","Guayas <br>Time: 2023-10-12 10:30:28","Guayas <br>Time: 2023-10-12 11:00:10","Guayas <br>Time: 2023-10-12 11:10:23","Guayas <br>Time: 2023-10-12 11:20:06","Guayas <br>Time: 2023-10-12 11:30:06","Guayas <br>Time: 2023-10-12 11:40:06","Guayas <br>Time: 2023-10-12 11:50:06","Guayas <br>Time: 2023-10-12 12:00:06","Guayas <br>Time: 2023-10-12 12:30:07","Guayas <br>Time: 2023-10-12 13:00:08","Guayas <br>Time: 2023-10-12 13:30:08","Guayas <br>Time: 2023-10-12 14:00:09","Guayas <br>Time: 2023-10-12 14:30:20","Guayas <br>Time: 2023-10-12 15:00:06","Guayas <br>Time: 2023-10-12 15:00:16"],null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addCircleMarkers","args":[-2.1437217,-80.0881071,5,null,"Guayas",{"interactive":true,"className":"","stroke":false,"color":"#1AE4B6FF","weight":5,"opacity":1,"fill":true,"fillColor":"#1AE4B6FF","fillOpacity":1},null,null,"2023-10-12 15:00:16",null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addMarkers","args":[-2.1437217,-80.0881071,{"iconUrl":{"data":"https://raw.githubusercontent.com/ChrisBeirne/Osa-Conservation-Movement-Ecology-Daily-Report/main/icons/king_small.png","index":0},"iconWidth":38,"iconHeight":40,"iconAnchorX":22,"iconAnchorY":39,"shadowUrl":{"data":"https://raw.githubusercontent.com/ChrisBeirne/Osa-Conservation-Movement-Ecology-Daily-Report/main/icons/vul_small_shadow.png","index":0},"shadowWidth":38,"shadowHeight":30,"shadowAnchorX":4,"shadowAnchorY":39},null,"Guayas",{"interactive":true,"draggable":false,"keyboard":true,"title":"","alt":"","zIndexOffset":0,"opacity":1,"riseOnHover":false,"riseOffset":250},"Guayas <br>Time: 2023-10-12 15:00:16 <br>Long: -80.0881071 <br>Lat: -2.1437217",null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addPolylines","args":[[[[{"lng":[-80.5097851,-80.5096178,-80.50967009999999,-80.5097351,-80.5097762,-80.50975320000001,-80.5096786,-80.50598100000001,-80.514135,-80.51033099999999,-80.5253226,-80.5505431,-80.5888652,-80.58681540000001,-80.58918559999999,-80.602057,-80.602267,-80.6023654,-80.602301,-80.6020322,-80.601899,-80.6020707,-80.6096819,-80.60981990000001,-80.6112124,-80.62915700000001,-80.618326,-80.619128,-80.6212239,-80.6204036],"lat":[-1.7406866,-1.7404333,-1.7405255,-1.7406074,-1.7402456,-1.740614,-1.740639,-1.7274991,-1.7158147,-1.7161144,-1.7256003,-1.7099735,-1.6831599,-1.6644367,-1.6249663,-1.618086,-1.6187674,-1.6187392,-1.6186303,-1.6181198,-1.6181262,-1.6181159,-1.6149945,-1.614883,-1.5924184,-1.5555091,-1.5745813,-1.5624269,-1.5578838,-1.5582954]}]]],null,"Pigio",{"interactive":true,"className":"","stroke":true,"color":"#FABA39FF","weight":3,"opacity":0.3,"fill":false,"fillColor":"#FABA39FF","fillOpacity":0.2,"smoothFactor":1,"noClip":false},null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addCircleMarkers","args":[[-1.7406866,-1.7404333,-1.7405255,-1.7406074,-1.7402456,-1.740614,-1.740639,-1.7274991,-1.7158147,-1.7161144,-1.7256003,-1.7099735,-1.6831599,-1.6644367,-1.6249663,-1.618086,-1.6187674,-1.6187392,-1.6186303,-1.6181198,-1.6181262,-1.6181159,-1.6149945,-1.614883,-1.5924184,-1.5555091,-1.5745813,-1.5624269,-1.5578838,-1.5582954],[-80.5097851,-80.5096178,-80.50967009999999,-80.5097351,-80.5097762,-80.50975320000001,-80.5096786,-80.50598100000001,-80.514135,-80.51033099999999,-80.5253226,-80.5505431,-80.5888652,-80.58681540000001,-80.58918559999999,-80.602057,-80.602267,-80.6023654,-80.602301,-80.6020322,-80.601899,-80.6020707,-80.6096819,-80.60981990000001,-80.6112124,-80.62915700000001,-80.618326,-80.619128,-80.6212239,-80.6204036],2,null,"Pigio",{"interactive":true,"className":"","stroke":false,"color":"#FABA39FF","weight":5,"opacity":0.5,"fill":true,"fillColor":"#FABA39FF","fillOpacity":0.3},null,null,["Pigio <br>Time: 2023-10-11 07:00:29","Pigio <br>Time: 2023-10-11 07:30:16","Pigio <br>Time: 2023-10-11 08:00:12","Pigio <br>Time: 2023-10-11 08:30:20","Pigio <br>Time: 2023-10-11 09:00:12","Pigio <br>Time: 2023-10-11 09:30:23","Pigio <br>Time: 2023-10-11 10:00:09","Pigio <br>Time: 2023-10-11 10:30:08","Pigio <br>Time: 2023-10-11 10:40:06","Pigio <br>Time: 2023-10-11 10:50:07","Pigio <br>Time: 2023-10-11 11:00:06","Pigio <br>Time: 2023-10-11 11:10:29","Pigio <br>Time: 2023-10-11 11:20:06","Pigio <br>Time: 2023-10-11 11:30:08","Pigio <br>Time: 2023-10-11 11:40:06","Pigio <br>Time: 2023-10-11 11:50:07","Pigio <br>Time: 2023-10-11 12:00:42","Pigio <br>Time: 2023-10-11 12:11:41","Pigio <br>Time: 2023-10-11 12:30:14","Pigio <br>Time: 2023-10-11 12:50:07","Pigio <br>Time: 2023-10-11 13:00:08","Pigio <br>Time: 2023-10-11 13:10:31","Pigio <br>Time: 2023-10-11 13:30:08","Pigio <br>Time: 2023-10-11 14:00:10","Pigio <br>Time: 2023-10-11 14:20:07","Pigio <br>Time: 2023-10-11 14:30:07","Pigio <br>Time: 2023-10-11 14:40:23","Pigio <br>Time: 2023-10-11 14:50:06","Pigio <br>Time: 2023-10-11 15:00:06","Pigio <br>Time: 2023-10-11 15:00:16"],null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addCircleMarkers","args":[-1.5582954,-80.6204036,5,null,"Pigio",{"interactive":true,"className":"","stroke":false,"color":"#FABA39FF","weight":5,"opacity":1,"fill":true,"fillColor":"#FABA39FF","fillOpacity":1},null,null,"2023-10-11 15:00:16",null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addMarkers","args":[-1.5582954,-80.6204036,{"iconUrl":{"data":"https://raw.githubusercontent.com/ChrisBeirne/Osa-Conservation-Movement-Ecology-Daily-Report/main/icons/king_small.png","index":0},"iconWidth":38,"iconHeight":40,"iconAnchorX":22,"iconAnchorY":39,"shadowUrl":{"data":"https://raw.githubusercontent.com/ChrisBeirne/Osa-Conservation-Movement-Ecology-Daily-Report/main/icons/vul_small_shadow.png","index":0},"shadowWidth":38,"shadowHeight":30,"shadowAnchorX":4,"shadowAnchorY":39},null,"Pigio",{"interactive":true,"draggable":false,"keyboard":true,"title":"","alt":"","zIndexOffset":0,"opacity":1,"riseOnHover":false,"riseOffset":250},"Pigio <br>Time: 2023-10-11 15:00:16 <br>Long: -80.6204036 <br>Lat: -1.5582954",null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addPolylines","args":[[[[{"lng":[-80.65352900000001,-80.6534961,-80.6536018,-80.6535228,-80.6535233,-80.6536045,-80.6532972,-80.63727369999999,-80.6035554,-80.59540990000001,-80.5946921,-80.5934037,-80.5934943,-80.590959,-80.59110819999999,-80.59097850000001,-80.5911167,-80.59092080000001,-80.5868289,-80.59085279999999,-80.6212944,-80.62730070000001,-80.6307039,-80.6222377,-80.61035699999999,-80.6262566,-80.62629889999999,-80.6262337,-80.6262364,-80.62624700000001,-80.6262296,-80.6263041,-80.63128330000001,-80.6313222,-80.6461491,-80.65360870000001,-80.65320079999999,-80.6530453,-80.6532138,-80.6531796,-80.6531598,-80.6531475,-80.6532555,-80.65317349999999,-80.65319220000001,-80.6536977,-80.65425159999999,-80.6541209,-80.6541998,-80.65375450000001,-80.6541639,-80.65430360000001,-80.6543585,-80.6542737,-80.6541983,-80.654167,-80.65364219999999,-80.6531797,-80.6531617,-80.6531805,-80.6531286,-80.6531473,-80.6538271,-80.6535379,-80.6537458,-80.6536313,-80.6536423,-80.65389039999999,-80.6538065,-80.65359979999999,-80.653733,-80.6536869,-80.6537484,-80.6537131,-80.65323859999999,-80.653926,-80.65373940000001,-80.6537381,-80.6536708,-80.6545493,-80.6544293,-80.6546321,-80.65455799999999,-80.65446679999999,-80.6546323,-80.65446009999999],"lat":[-1.8703842,-1.8703058,-1.8703055,-1.870381,-1.8703736,-1.8704003,-1.8705892,-1.8955221,-1.8795156,-1.8664047,-1.8641533,-1.8650523,-1.8655382,-1.8646502,-1.8646925,-1.8647035,-1.8646157,-1.8645885,-1.8668321,-1.8683893,-1.8736718,-1.8669282,-1.8695889,-1.8719838,-1.8759656,-1.8673782,-1.8673576,-1.8673928,-1.8673801,-1.8673599,-1.8673538,-1.8674306,-1.8758202,-1.8757903,-1.8777668,-1.8704645,-1.8706207,-1.8706218,-1.8705997,-1.8706406,-1.8705195,-1.8705968,-1.8706208,-1.8706182,-1.8706053,-1.8705456,-1.8701425,-1.8701749,-1.8700861,-1.8699994,-1.8700264,-1.8700791,-1.8701003,-1.8701806,-1.8700399,-1.8700715,-1.8702762,-1.8706545,-1.870655,-1.8706289,-1.8706948,-1.8706608,-1.8704161,-1.8705805,-1.8705604,-1.8702955,-1.8705308,-1.8703394,-1.8705631,-1.8705558,-1.8704677,-1.8705398,-1.8705641,-1.8705302,-1.8705574,-1.8705889,-1.8704618,-1.8705693,-1.8705855,-1.8706165,-1.8703962,-1.8705747,-1.8705037,-1.8705528,-1.8706441,-1.8704717]}]]],null,"Quil",{"interactive":true,"className":"","stroke":true,"color":"#7A0403FF","weight":3,"opacity":0.3,"fill":false,"fillColor":"#7A0403FF","fillOpacity":0.2,"smoothFactor":1,"noClip":false},null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addCircleMarkers","args":[[-1.8703842,-1.8703058,-1.8703055,-1.870381,-1.8703736,-1.8704003,-1.8705892,-1.8955221,-1.8795156,-1.8664047,-1.8641533,-1.8650523,-1.8655382,-1.8646502,-1.8646925,-1.8647035,-1.8646157,-1.8645885,-1.8668321,-1.8683893,-1.8736718,-1.8669282,-1.8695889,-1.8719838,-1.8759656,-1.8673782,-1.8673576,-1.8673928,-1.8673801,-1.8673599,-1.8673538,-1.8674306,-1.8758202,-1.8757903,-1.8777668,-1.8704645,-1.8706207,-1.8706218,-1.8705997,-1.8706406,-1.8705195,-1.8705968,-1.8706208,-1.8706182,-1.8706053,-1.8705456,-1.8701425,-1.8701749,-1.8700861,-1.8699994,-1.8700264,-1.8700791,-1.8701003,-1.8701806,-1.8700399,-1.8700715,-1.8702762,-1.8706545,-1.870655,-1.8706289,-1.8706948,-1.8706608,-1.8704161,-1.8705805,-1.8705604,-1.8702955,-1.8705308,-1.8703394,-1.8705631,-1.8705558,-1.8704677,-1.8705398,-1.8705641,-1.8705302,-1.8705574,-1.8705889,-1.8704618,-1.8705693,-1.8705855,-1.8706165,-1.8703962,-1.8705747,-1.8705037,-1.8705528,-1.8706441,-1.8704717],[-80.65352900000001,-80.6534961,-80.6536018,-80.6535228,-80.6535233,-80.6536045,-80.6532972,-80.63727369999999,-80.6035554,-80.59540990000001,-80.5946921,-80.5934037,-80.5934943,-80.590959,-80.59110819999999,-80.59097850000001,-80.5911167,-80.59092080000001,-80.5868289,-80.59085279999999,-80.6212944,-80.62730070000001,-80.6307039,-80.6222377,-80.61035699999999,-80.6262566,-80.62629889999999,-80.6262337,-80.6262364,-80.62624700000001,-80.6262296,-80.6263041,-80.63128330000001,-80.6313222,-80.6461491,-80.65360870000001,-80.65320079999999,-80.6530453,-80.6532138,-80.6531796,-80.6531598,-80.6531475,-80.6532555,-80.65317349999999,-80.65319220000001,-80.6536977,-80.65425159999999,-80.6541209,-80.6541998,-80.65375450000001,-80.6541639,-80.65430360000001,-80.6543585,-80.6542737,-80.6541983,-80.654167,-80.65364219999999,-80.6531797,-80.6531617,-80.6531805,-80.6531286,-80.6531473,-80.6538271,-80.6535379,-80.6537458,-80.6536313,-80.6536423,-80.65389039999999,-80.6538065,-80.65359979999999,-80.653733,-80.6536869,-80.6537484,-80.6537131,-80.65323859999999,-80.653926,-80.65373940000001,-80.6537381,-80.6536708,-80.6545493,-80.6544293,-80.6546321,-80.65455799999999,-80.65446679999999,-80.6546323,-80.65446009999999],2,null,"Quil",{"interactive":true,"className":"","stroke":false,"color":"#7A0403FF","weight":5,"opacity":0.5,"fill":true,"fillColor":"#7A0403FF","fillOpacity":0.3},null,null,["Quil <br>Time: 2023-10-11 07:00:22","Quil <br>Time: 2023-10-11 07:30:17","Quil <br>Time: 2023-10-11 08:00:28","Quil <br>Time: 2023-10-11 08:30:18","Quil <br>Time: 2023-10-11 09:00:13","Quil <br>Time: 2023-10-11 09:30:20","Quil <br>Time: 2023-10-11 10:00:11","Quil <br>Time: 2023-10-11 10:30:08","Quil <br>Time: 2023-10-11 10:40:09","Quil <br>Time: 2023-10-11 10:50:20","Quil <br>Time: 2023-10-11 11:00:13","Quil <br>Time: 2023-10-11 11:10:08","Quil <br>Time: 2023-10-11 11:20:08","Quil <br>Time: 2023-10-11 11:40:50","Quil <br>Time: 2023-10-11 12:00:27","Quil <br>Time: 2023-10-11 12:10:36","Quil <br>Time: 2023-10-11 12:20:35","Quil <br>Time: 2023-10-11 12:30:23","Quil <br>Time: 2023-10-11 12:50:07","Quil <br>Time: 2023-10-11 13:00:06","Quil <br>Time: 2023-10-11 13:10:23","Quil <br>Time: 2023-10-11 13:20:07","Quil <br>Time: 2023-10-11 13:30:06","Quil <br>Time: 2023-10-11 13:40:06","Quil <br>Time: 2023-10-11 13:50:07","Quil <br>Time: 2023-10-11 14:00:07","Quil <br>Time: 2023-10-11 14:10:07","Quil <br>Time: 2023-10-11 14:20:07","Quil <br>Time: 2023-10-11 14:30:06","Quil <br>Time: 2023-10-11 15:00:07","Quil <br>Time: 2023-10-11 15:00:17","Quil <br>Time: 2023-10-11 15:30:23","Quil <br>Time: 2023-10-11 15:40:06","Quil <br>Time: 2023-10-11 15:50:07","Quil <br>Time: 2023-10-11 16:00:07","Quil <br>Time: 2023-10-11 16:10:06","Quil <br>Time: 2023-10-11 16:20:26","Quil <br>Time: 2023-10-11 16:30:18","Quil <br>Time: 2023-10-11 16:40:29","Quil <br>Time: 2023-10-11 16:50:13","Quil <br>Time: 2023-10-11 17:00:22","Quil <br>Time: 2023-10-11 17:10:19","Quil <br>Time: 2023-10-11 17:20:23","Quil <br>Time: 2023-10-11 17:30:15","Quil <br>Time: 2023-10-11 17:40:09","Quil <br>Time: 2023-10-11 18:00:09","Quil <br>Time: 2023-10-11 18:30:07","Quil <br>Time: 2023-10-11 19:00:22","Quil <br>Time: 2023-10-12 05:30:50","Quil <br>Time: 2023-10-12 06:00:09","Quil <br>Time: 2023-10-12 06:30:13.98","Quil <br>Time: 2023-10-12 07:00:07","Quil <br>Time: 2023-10-12 07:00:17","Quil <br>Time: 2023-10-12 07:30:09","Quil <br>Time: 2023-10-12 08:00:23","Quil <br>Time: 2023-10-12 08:30:06","Quil <br>Time: 2023-10-12 09:00:11","Quil <br>Time: 2023-10-12 09:31:59","Quil <br>Time: 2023-10-12 09:40:25","Quil <br>Time: 2023-10-12 09:51:41","Quil <br>Time: 2023-10-12 10:00:19","Quil <br>Time: 2023-10-12 10:10:45","Quil <br>Time: 2023-10-12 10:30:15","Quil <br>Time: 2023-10-12 11:00:13","Quil <br>Time: 2023-10-12 11:30:23","Quil <br>Time: 2023-10-12 12:00:30","Quil <br>Time: 2023-10-12 12:30:09","Quil <br>Time: 2023-10-12 13:00:11","Quil <br>Time: 2023-10-12 13:30:38","Quil <br>Time: 2023-10-12 14:00:08","Quil <br>Time: 2023-10-12 14:30:07","Quil <br>Time: 2023-10-12 15:00:10","Quil <br>Time: 2023-10-12 15:00:20","Quil <br>Time: 2023-10-12 15:30:08","Quil <br>Time: 2023-10-12 16:00:07","Quil <br>Time: 2023-10-12 16:30:09","Quil <br>Time: 2023-10-12 17:00:20","Quil <br>Time: 2023-10-12 17:30:31","Quil <br>Time: 2023-10-12 18:00:10","Quil <br>Time: 2023-10-12 18:30:08","Quil <br>Time: 2023-10-12 19:00:18","Quil <br>Time: 2023-10-13 05:30:55","Quil <br>Time: 2023-10-13 06:00:20","Quil <br>Time: 2023-10-13 06:30:12","Quil <br>Time: 2023-10-13 07:00:09","Quil <br>Time: 2023-10-13 07:00:19"],null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addCircleMarkers","args":[-1.8704717,-80.65446009999999,5,null,"Quil",{"interactive":true,"className":"","stroke":false,"color":"#7A0403FF","weight":5,"opacity":1,"fill":true,"fillColor":"#7A0403FF","fillOpacity":1},null,null,"2023-10-13 07:00:19",null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addMarkers","args":[-1.8704717,-80.65446009999999,{"iconUrl":{"data":"https://raw.githubusercontent.com/ChrisBeirne/Osa-Conservation-Movement-Ecology-Daily-Report/main/icons/king_small.png","index":0},"iconWidth":38,"iconHeight":40,"iconAnchorX":22,"iconAnchorY":39,"shadowUrl":{"data":"https://raw.githubusercontent.com/ChrisBeirne/Osa-Conservation-Movement-Ecology-Daily-Report/main/icons/vul_small_shadow.png","index":0},"shadowWidth":38,"shadowHeight":30,"shadowAnchorX":4,"shadowAnchorY":39},null,"Quil",{"interactive":true,"draggable":false,"keyboard":true,"title":"","alt":"","zIndexOffset":0,"opacity":1,"riseOnHover":false,"riseOffset":250},"Quil <br>Time: 2023-10-13 07:00:19 <br>Long: -80.6544601 <br>Lat: -1.8704717",null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addScaleBar","args":[{"maxWidth":100,"metric":true,"imperial":false,"updateWhenIdle":true,"position":"topleft"}]},{"method":"addLayersControl","args":[["Simple","OS","Satellite"],["Guasmo","Guayas","Pigio","Quil"],{"collapsed":false,"autoZIndex":true,"position":"topright"}]}],"limits":{"lat":[-2.1692358,-1.5555091],"lng":[-80.6546323,-80.0468632]}},"evals":[],"jsHooks":[]}</script>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="cluster-detection.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["Osa Conservation: Tracker Checker.pdf", "Osa Conservation: Tracker Checker.epub"],
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "section"
+}
+});
+});
+</script>
+
+</body>
+
+</html>
