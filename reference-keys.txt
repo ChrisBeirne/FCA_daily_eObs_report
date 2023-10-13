@@ -1,5 +1,5 @@
 device-status
-recent-locations
+recent-locations-last-2-weeks
 cluster-detection
 roost-and-nest-sites
 nighttime-roost-movement-summary
