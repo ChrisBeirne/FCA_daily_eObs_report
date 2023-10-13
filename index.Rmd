@@ -1,5 +1,5 @@
 ---
-title: "Osa Conservation: Movement report"
+title: "FCA: Daily movement report"
 author:
   - Chris Beirne
 site: bookdown::test-bookdown
@@ -13,7 +13,7 @@ editor_options:
 
 # Device Status
 
-This document summarizes the movement locations for all active devices within Osa Conservation's movement ecology project. 
+This document summarizes the movement locations for all active eObs devices in FCA's `Ecología del movimiento S. papa` project. 
 
 ```{r c01, echo=F, message=F, include=F}
 knitr::opts_chunk$set(echo = FALSE, message=F, warning=F)
@@ -184,7 +184,7 @@ dat$icon <- sub(".*? ", "", dat$taxon_canonical_name)
 
 *Last data request: `r now(tzone = "America/Costa_Rica")`*
 
-The project currently contains `r length(unique(dat$tag_id))` active tag deployments (defined as being active within the last 14 days). 
+The project currently contains `r length(unique(dat$tag_id))` tag deployments. 
 
 ```{r  c02, include=F}
 
@@ -321,7 +321,7 @@ tmp_ecuador_shp$colours <- col.cat[tmp_ecuador_shp$name]
 
 ```
 
-We currently have `r length(unique(tmp_ecuador$name))` devices transmitting data in ecuador:
+We currently have `r length(unique(tmp_ecuador$name))` devices transmitting data in Ecuador:
 
 
 ```{r, echo=F}
@@ -417,13 +417,13 @@ fig
 
 
 
-# Recent locations  {.tabset}
+# Recent locations (last 2 weeks)  {.tabset}
 
-The following maps relate to just the last 48 hours of data for actively transmitting vultures, the last 2 weeks of data for actively transmitting mammals.  
+The following maps relate to just the last two weeks.  
 
 ```{r, echo=F, message=F, warning=F}
 # Subset to 48 hours
-tmp_ecuador_48 <- dat[dat$country=="ecuador" & dat$timestamp > max(ymd_hms(animals$timestamp_end),na.rm=T)-48*60*60,]
+tmp_ecuador_48 <- dat[dat$country=="ecuador" & dat$timestamp > max(ymd_hms(animals$timestamp_end),na.rm=T)-14*24*60*60,]
 
 tmp_ecuador_48$name <- as.character(tmp_ecuador_48$name)
 
@@ -530,7 +530,7 @@ Key:
 # Subset to costa rica and vultures
 sub_dat <- mov_dat
 
-# Just pull last 3 days
+# Just pull last 7 days
 start_t2 <- t-as.difftime(7,units='days')
 sub_dat <- sub_dat[sub_dat$timestamp>start_t2,]
 
@@ -1074,7 +1074,7 @@ The following is a list of all of the clusters in the above map, ordered by age 
 
 # Roost and nest sites
 
-The following map shows the locations where birds spend the night. 
+The following map shows the locations where birds spend the night for the last two weeks. 
 
 **IMPORTANT** 
 
@@ -1089,6 +1089,12 @@ If a birds night-time roost is does not change then the average roost spacing wi
 ```{r, eval=T, echo=F, warning=F, message=F}
 # Remove the non-vultures
 sub_dat <- mov_dat
+
+# Just pull last 7 days
+start_t2 <- t-as.difftime(14,units='days')
+sub_dat <- sub_dat[sub_dat$timestamp>start_t2,]
+
+
 sub_dat$name <- gsub("^.*\\.","", sub_dat$name )
 # remove empty levels
 sub_dat$name <- factor(sub_dat$name)
@@ -1302,7 +1308,7 @@ fig
 
 ###  Location accuracy 
 
-Average horizontal location accuracy (last 14 days):
+Average horizontal location accuracy:
 
 ```{r, echo=F, warning=F}
 

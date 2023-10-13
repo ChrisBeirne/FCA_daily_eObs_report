@@ -5,9 +5,9 @@ bookdown::gitbook:
     toc:
       collapse: section
       before: |
-        <li><a href="./">Osa Conservation: Tracker Checker</a></li>
+        <li><a href="./">FCA: Daily movement report</a></li>
       after: |
-        <li><a href="https://github.com/ChrisBeirne/test_report/" target="blank">Osa Conservation: Tracker Checker</a></li>
+        <li><a href="https://github.com/ChrisBeirne/FCA_daily_eObs_report" target="blank">FCA: Daily movement report</a></li>
     download: ["pdf", "epub"]
     search: yes
 bookdown::html_book:
