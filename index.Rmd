@@ -61,31 +61,16 @@ loginStored <- movebankLogin(username=MOVE_USE,
                              password=MOVE_PASS)
 
 # Get animals
-# Vultures
-animals <-getMovebankAnimals(study=1573471517,login=loginStored)
-# Ocelot
-tmp <-getMovebankAnimals(study=2526574641,login=loginStored)
-# Tapir
-tmp2 <- getMovebankAnimals(study=1954804459,login=loginStored)
-# Carnivores
-tmp3 <- getMovebankAnimals(study=2957292408,login=loginStored)
-
-# andean condor foundation
-tmp4 <- getMovebankAnimals(study=2885579493,login=loginStored)
+animals <- getMovebankAnimals(study=2885579493,login=loginStored)
 
 # Move nickname to locak_identifier
-tmp4$local_identifier <- tmp4$nick_name
-tmp4$animalName <- tmp4$nick_name
+animals$local_identifier <- animals$nick_name
+animals$animalName <- animals$nick_name
 
-animals <- rbind(animals, tmp,tmp2, tmp3, tmp4)
 
 # They are duplicated as there are two types of data - subset to GPS
 # They vary by the field "sensor_type_id"
 animals <- animals[animals$sensor_type_id==653 & is.na(animals$sensor_type_id)==F,]
-
-# Clean up the name
-animals$animalName <- paste0(sub('\\_.*', '', animals$animalName), "_", sub('\\ .*', '', animals$taxon_canonical_name))
-animals$name <- sub('\\_.*', '', animals$animalName)
 
 # Sort date objects
 animals$timestamp_start <- ymd_hms(animals$timestamp_start)
@@ -94,45 +79,21 @@ animals$timestamp_end <- ymd_hms(animals$timestamp_end)
 # Get last 2 weeks
 t <- now("America/Costa_Rica")
 start_t <- t-as.difftime(14,units='days')
-start_mammal <- t-as.difftime(48,units='days')
-
-# Vultures
-tmp1 <- getMovebankData(study=1573471517, login=loginStored,  removeDuplicatedTimestamps=TRUE,
-                       timestamp_start=start_t)
-
-#OCelot - removed as collar no longer reporting
-#tmp2 <- getMovebankData(study=2526574641, login=loginStored,  removeDuplicatedTimestamps=TRUE)
-
-#Tapir
-tmp3 <- getMovebankData(study=1954804459, login=loginStored,  removeDuplicatedTimestamps=TRUE,
-                       timestamp_start=start_mammal)
-# Remove the obvious outlier
-tmp3 <- tmp3[tmp3$location_lat>8,]
-
-#Carnivores
-tmp4 <- getMovebankData(study=2957292408, login=loginStored,  removeDuplicatedTimestamps=TRUE,
-                       timestamp_start=start_mammal)
 
 #Andean condor foundation
-tmp5 <- getMovebankData(study=2885579493, login=loginStored,  removeDuplicatedTimestamps=TRUE,
-                       timestamp_start=start_mammal)
+mov_dat <- getMovebankData(study=2885579493, login=loginStored,  removeDuplicatedTimestamps=TRUE)
 
-ec_names <- data.frame(code=row.names(tmp5@idData), name=(tmp5@idData$nick_name))
-
-mov_dat <- moveStack(tmp1, tmp3, tmp4, tmp5)
+ec_names <- data.frame(code=row.names(mov_dat@idData), name=(mov_dat@idData$nick_name))
 
 # Remove the random zeros
-summary(mov_dat$location_long)
+#summary(mov_dat$location_long)
 mov_dat <- mov_dat[mov_dat$location_long<0,]
-
-
 
 #Add the names
 mov_dat$name <- trackId(mov_dat)
 
-
 # Convert timezone
-mov_dat$timestamp <- with_tz(timestamps(mov_dat), tz="America/Costa_Rica")
+mov_dat$timestamp <- with_tz(timestamps(mov_dat), tz="America/Guayaquil")
 
 # all data
 #dat <- getMovebankData(study=1573471517, login=loginStored,  removeDuplicatedTimestamps=TRUE)
@@ -141,16 +102,11 @@ mov_dat$timestamp <- with_tz(timestamps(mov_dat), tz="America/Costa_Rica")
 dat <- as.data.frame(mov_dat)
 
 # Convert dat to costa rica time
-dat$timestamp <- with_tz(dat$timestamp, tzone = "America/Costa_Rica")
+dat$timestamp <- with_tz(dat$timestamp, tzone = "America/Guayaquil")
 
 # Add the location data
 dat <- left_join(dat, animals[, c("tag_id", "animalName")])
 # Sort the names out
-
-dat$animalName <- sub('\\_.*', '', dat$animalName)
-
-# Add in the taxonomic group
-dat$animalName <- paste0(dat$animalName, "_", sub('\\ .*', '', dat$taxon_canonical_name))
 
 # # Setup the leaflet icon
 # leafIcons <- icons(
@@ -224,19 +180,6 @@ iconSet <- iconList(aura= aura,
 
 dat$icon <- sub(".*? ", "", dat$taxon_canonical_name)
 
-# Add costa rica survey locations
-cr_locs<- data.frame(location_code=c("AIRS02", "CERR02","LOMAS01"), 	
-           latitude=c(8.402595,	8.416142,8.758321)	,
-           longitude=c( -83.35852,	-83.31793,	-83.29787) )
-
-
-# Add peru survey locations
-pe_locs<- data.frame(location_code=c("VT_MANU01"), 	
-           latitude=c(-12.887758)	,
-           longitude=c( -71.403264) )
-
-
-
 ```
 
 *Last data request: `r now(tzone = "America/Costa_Rica")`*
@@ -246,12 +189,7 @@ The project currently contains `r length(unique(dat$tag_id))` active tag deploym
 ```{r  c02, include=F}
 
 # Add a country column
-dat$country <- NA
-dat$country[dat$location_lat>6] <- "costa_rica"
-dat$country[dat$location_lat>(-6) & dat$location_lat<6] <- "ecuador"
-dat$country[dat$location_lat<(-6)] <- "peru"
-
-#table(dat$country)
+dat$country <- "ecuador"
 
 # Costa rica
 # Convert to shapefiles
@@ -342,27 +280,15 @@ tmp2 <- tmp2[order(tmp2$days_since_check_in),]
 #row.names(tmp2) <- 1:nrow(tmp2)
 
 
-
-tmp2[, c("name", "timestamp_end", "days_since_check_in")] %>%
-  kbl() %>%
-  kable_styling() %>%
-  kableExtra::scroll_box(width = "100%")
-
+if(nrow(tmp2)>0){
+  tmp2[, c("name", "timestamp_end", "days_since_check_in")] %>%
+    kbl() %>% kable_styling() %>% kableExtra::scroll_box(width = "100%")
+  } else {print("None")}
 ```
 
 **Tagging summary**
 
-The proportion of active tags by country and species:
-
-```{r, echo=F, eval=F}
-# And by species:
-fig <- plot_ly()
-# All vultures - Species
-fig %>% add_pie(data = dplyr::count(check_in_summary, taxon_canonical_name), labels = ~taxon_canonical_name, values = ~n,
-
-          name = "Species")
-
-```
+The proportion of active tags by species:
 
 ```{r, echo=F}
 
@@ -370,11 +296,6 @@ data <- t(as.data.frame.matrix(table(check_in_summary$taxon_canonical_name, chec
 data <- as.data.frame(data)
 data$country <- row.names(data)
 fig <- plot_ly(data, x = ~country, y = ~data$`Sarcoramphus papa`, type = 'bar', name = 'King vulture')
-fig <- fig %>% add_trace(y = ~data$`Cathartes melambrotus`, name = 'GYH vulture')
-fig <- fig %>% add_trace(y = ~data$`Cathartes aura`, name = 'Turkey vulture')
-fig <- fig %>% add_trace(y = ~data$`Coragyps atratus`, name = 'Black vulture')
-fig <- fig %>% add_trace(y = ~data$`Tapirus bairdii`, name = 'Tapir')
-fig <- fig %>% add_trace(y = ~data$`Atelocynus microtis`, name = 'Short-eared dog')
 fig <- fig %>% layout(yaxis = list(title = 'Count'), barmode = 'stack')
 
 fig
@@ -382,234 +303,7 @@ fig
 
 **Maps**
 
-Last 14 days:
-
-### Costa Rica
-
-```{r, echo=F}
-tmp_cr <- dat[dat$country=="costa_rica",]
-tmp_cr_shp <- dat_shp[dat_shp$country=="costa_rica",]
-
-
-# First lets choose a category to colour
-tmp_cr[,"name"] <- factor(tmp_cr[,"name"])
-tmp_cr_shp$name <- factor(tmp_cr_shp$name)
-
-col.cat <- turbo(length(levels(tmp_cr[,"name"])))
-# Add it to the dataframe
-tmp_cr$colours <- col.cat[tmp_cr[,"name"]]
-tmp_cr_shp$colours <- col.cat[tmp_cr_shp$name]
-
-```
-
-We currently have `r length(unique(tmp_cr$name))` devices transmitting data in Costa Rica:
-
-```{r, echo=F}
-
-# New map
-ids <- tmp_cr_shp$name
-names <- sub('\\_.*', '', tmp_cr_shp$name)
-i <- 24
-m <- leaflet() %>%
-  # Add a satellite image layer
-  addProviderTiles(providers$CartoDB.PositronNoLabels, group="Simple") %>%
-  addProviderTiles(providers$Esri.WorldImagery, group="Satellite") %>%
-  addProviderTiles(providers$OpenStreetMap.Mapnik, group="OS") #%>%     
-
-  for (i in seq(along=ids))
-    {
-      m <- m %>%
-        addPolylines(data = tmp_cr_shp[i,], color = tmp_cr_shp$colours[i], group = ids[i], weight=3,opacity=0.3)         %>%
-        addCircleMarkers(lng=tmp_cr$location_long[tmp_cr$name==ids[i]],
-                         lat=tmp_cr$location_lat[tmp_cr$name==ids[i]], 
-                         popup=paste(tmp_cr$timestamp[tmp_cr$name==ids[i]]),
-                         fillOpacity = 0.3, opacity = 0.5, radius=2, color = tmp_cr_shp$colours[i], group = ids[i], stroke=F) %>%
-        addCircleMarkers(lng=last(tmp_cr$location_long[tmp_cr$name==ids[i]]),
-                         lat=last(tmp_cr$location_lat[tmp_cr$name==ids[i]]), 
-                         popup=paste(last(tmp_cr$timestamp[tmp_cr$name==ids[i]])),
-                         fillOpacity = 1, opacity = 1, radius=5, color = tmp_cr_shp$colours[i], group = ids[i], stroke=F) %>% 
-        # Add the last point
-        addMarkers(lng=last(tmp_cr$location_long[tmp_cr$name==ids[i]]),
-                         lat=last(tmp_cr$location_lat[tmp_cr$name==ids[i]]), 
-                         popup=paste(last(tmp_cr$local_identifier[tmp_cr$name==ids[i]]),
-                                     "<br>Time:",last(tmp_cr$timestamp[tmp_cr$name==ids[i]]),
-                                     "<br>Long:",last(tmp_cr$location_long[tmp_cr$name==ids[i]]),
-                                     "<br>Lat:",last(tmp_cr$location_lat[tmp_cr$name==ids[i]])),
-                   icon = iconSet[tmp_cr$icon[tmp_cr$name==ids[i]][1]], group=ids[i]) #, fillOpacity = 1, opacity = 1, radius=5, color = tmp_cr_shp$colours[i], group = ids[i], stroke=F
-    }
-
-  m <- m %>%
-      # Add survey location
-      addMarkers(lng=cr_locs$longitude,
-                         lat=cr_locs$latitude, 
-                         popup=cr_locs$location_code) %>% 
-      #addLegend(position= "topright", colors=tmp_cr_shp$colours, 
-       #         labels=names ,opacity = 0.7, title = "Animals") %>%
-      addScaleBar(position="topleft", 
-                  options=scaleBarOptions(maxWidth = 100, metric = TRUE, imperial = FALSE, updateWhenIdle = TRUE)) %>%
-      addLayersControl(
-        baseGroups = c("OS", "Simple", "Satellite"),
-        overlayGroups = ids,
-        options = layersControlOptions(collapsed = FALSE)
-      ) %>%
-  addFullscreenControl()
-  
-m 
-```
-
-Daily schedule of the tags:
-```{r, echo=F, warning=F, message=F}
-
-xform <- list(categoryorder = "array",
-              categoryarray = c(check_in_summary$name))
-
-tmp_cr$hour <- as.numeric(substr(tmp_cr$timestamp,12,13))
-tmp_cr$hour <- factor(tmp_cr$hour, levels=0:23)
-tmp_cr$name <- as.factor(tmp_cr$name)
-tmp_cr2 <- tmp_cr %>% group_by(name, hour, .drop=F) %>% dplyr::summarize(obs=n())
-
-# Tag activity - account for survey effort
-tmp_act_cr <- tmp_cr %>% group_by(name, .drop=F) %>% dplyr::summarize(start=min(timestamp), end=max(timestamp))
-
-tmp_act_cr$duration <- as.numeric(difftime(tmp_act_cr$end, tmp_act_cr$start, units="days"))
-tmp_cr2 <- tmp_cr %>% group_by(name, hour, .drop=F) %>% dplyr::summarize(obs=n())
-
-tmp_cr2 <- left_join(tmp_cr2, tmp_act_cr)
-
-tmp_cr2$sampling_rate <- tmp_cr2$obs/tmp_cr2$duration
-
-# Add in the colour code
-cols <- col.cat[1:length(levels(tmp_cr2$name))]
-
-
-fig <- plot_ly(tmp_cr2, x = ~hour, y = ~sampling_rate, name = tmp_cr2$name, type = 'scatter', mode = 'lines',split = ~name,color=~name, colors=cols) 
-fig <- fig %>%  layout(title = "Average hourly locations (last 14 days)",
-                      xaxis = xform,
-                      xaxis = list(title = ""),
-                      yaxis = list(title = "Locations per hour"))
-
-fig
-
-
-
-```
-### Peru
-
-```{r, echo=F}
-tmp_peru <- dat[dat$country=="peru",]
-tmp_peru_shp <- dat_shp[dat_shp$country=="peru",]
-
-
-# First lets choose a category to colour
-tmp_peru[,"name"] <- factor(tmp_peru[,"name"])
-tmp_peru_shp$name <- factor(tmp_peru_shp$name)
-
-col.cat <- turbo(length(levels(tmp_peru[,"name"])))
-# Add it to the dataframe
-tmp_peru$colours <- col.cat[tmp_peru[,"name"]]
-tmp_peru_shp$colours <- col.cat[tmp_peru_shp$name]
-
-```
-
-We currently have `r length(unique(tmp_peru$name))` devices transmitting data in Peru:
-
-
-```{r, echo=F}
-# New map
-ids <- tmp_peru_shp$name
-i <- 1
-m <- leaflet() %>%
-  # Add a satellite image layer
-
-  addProviderTiles(providers$CartoDB.PositronNoLabels, group="Simple") %>%
-
-  addProviderTiles(providers$Esri.WorldImagery, group="Satellite") %>%
-  addProviderTiles(providers$OpenStreetMap.Mapnik, group="OS") #%>%     
-
-  for (i in seq(along=ids))
-    {
-      m <- m %>%
-        addPolylines(data = tmp_peru_shp[i,], color = tmp_peru_shp$colours[i], group = ids[i], weight=3,opacity=0.3)         %>%
-        addCircleMarkers(lng=tmp_peru$location_long[tmp_peru$name==ids[i]],
-                         lat=tmp_peru$location_lat[tmp_peru$name==ids[i]], 
-                         popup=paste(tmp_peru$timestamp[tmp_peru$name==ids[i]]),
-                         fillOpacity = 0.3, opacity = 0.5, radius=2, color = tmp_peru_shp$colours[i], group = ids[i], stroke=F) %>%
-        addCircleMarkers(lng=last(tmp_peru$location_long[tmp_peru$name==ids[i]]),
-                         lat=last(tmp_peru$location_lat[tmp_peru$name==ids[i]]), 
-                         popup=paste(last(tmp_peru$timestamp[tmp_peru$name==ids[i]])),
-                         fillOpacity = 1, opacity = 1, radius=5, color = tmp_peru_shp$colours[i], group = ids[i], stroke=F)  %>% 
-        # Add the last point
-        addMarkers(lng=last(tmp_peru$location_long[tmp_peru$name==ids[i]]),
-                         lat=last(tmp_peru$location_lat[tmp_peru$name==ids[i]]), 
-                         popup=paste(last(tmp_peru$local_identifier[tmp_peru$name==ids[i]]),
-                                     "<br>Time:",last(tmp_peru$timestamp[tmp_peru$name==ids[i]]),
-                                     "<br>Long:",last(tmp_peru$location_long[tmp_peru$name==ids[i]]),
-                                     "<br>Lat:",last(tmp_peru$location_lat[tmp_peru$name==ids[i]])),
-                   icon = iconSet[tmp_peru$icon[tmp_peru$name==ids[i]][1]], group=ids[i]) #, fillOpacity = 1, opacity = 1, radius=5, color = tmp_peru_shp$colours[i], group = ids[i], stroke=F
-    }
-    
-  m <- m %>%
-     # Add survey location
-      addMarkers(lng=pe_locs$longitude,
-                         lat=pe_locs$latitude, 
-                         popup=pe_locs$location_code) %>% 
-      #addLegend(position= "topright", colors=tmp_peru_shp$colours, 
-      #          labels=ids ,opacity = 0.7, title = "Animals") %>%
-      addScaleBar(position="topleft", 
-                  options=scaleBarOptions(maxWidth = 100, metric = TRUE, imperial = FALSE, updateWhenIdle = TRUE)) %>%
-      addLayersControl(
-        baseGroups = c("OS", "Simple", "Satellite"),
-        overlayGroups = ids,
-        options = layersControlOptions(collapsed = FALSE)
-      ) %>%
-  addFullscreenControl()
-  
-m 
-```
-
-
-
-Daily schedule of the tags (note this is in Costa Rica time):
-
-```{r, echo=F, warning=F, message=F}
-
-xform <- list(categoryorder = "array",
-              categoryarray = c(check_in_summary$name))
-
-tmp_peru$hour <- as.numeric(substr(tmp_peru$timestamp,12,13))
-tmp_peru$hour <- factor(tmp_peru$hour, levels=0:23)
-tmp_peru$name <- as.factor(tmp_peru$name)
-tmp_peru2 <- tmp_peru %>% group_by(name, hour, .drop=F) %>% dplyr::summarize(obs=n())
-
-# Tag activity - account for survey effort
-tmp_act_peru <- tmp_peru %>% group_by(name, .drop=F) %>% dplyr::summarize(start=min(timestamp), end=max(timestamp))
-
-tmp_act_peru$duration <- as.numeric(difftime(tmp_act_peru$end, tmp_act_peru$start, units="days"))
-tmp_peru2 <- tmp_peru %>% group_by(name, hour, .drop=F) %>% dplyr::summarize(obs=n())
-
-tmp_peru2 <- left_join(tmp_peru2, tmp_act_peru)
-
-tmp_peru2$sampling_rate <- tmp_peru2$obs/tmp_peru2$duration
-
-# Add in the colour code
-cols <- col.cat[1:length(levels(tmp_peru2$name))]
-
-
-fig <- plot_ly(tmp_peru2, x = ~hour, y = ~sampling_rate, name = tmp_peru2$name, type = 'scatter', mode = 'lines',split = ~name,color=~name, colors=cols) 
-fig <- fig %>%  layout(title = "Average hourly locations (last 14 days)",
-                      xaxis = xform,
-                      xaxis = list(title = ""),
-                      yaxis = list(title = "Locations per hour"))
-
-fig
-
-
-
-
-```
-
-
-### Ecuador
+Lifetime data:
 
 ```{r, echo=F}
 tmp_ecuador <- dat[dat$country=="ecuador",]
@@ -682,7 +376,7 @@ m <- leaflet() %>%
 m 
 ```
 
-Daily schedule of the tags (note this is in Costa Rica time):
+Average hourly schedule of the tags:
 
 ```{r, echo=F, warning=F, message=F}
 
@@ -723,202 +417,9 @@ fig
 
 
 
-# Last locations  {.tabset}
+# Recent locations  {.tabset}
 
 The following maps relate to just the last 48 hours of data for actively transmitting vultures, the last 2 weeks of data for actively transmitting mammals.  
-
-### Costa Rica
-
-```{r echo=F, message=FALSE, warning=FALSE}
-# Last 48 hours
-# Vulture
-tmp_cr_48 <- dat[dat$country=="costa_rica" & dat$timestamp > max(animals$timestamp_end, na.rm=T)-48*60*60 & dat$taxon_canonical_name %in% c("Cathartes aura" ,"Cathartes melambrotus", "Sarcoramphus papa", "Coragyps atratus"),]
-#Mammals
-tmp_48 <- dat[dat$country=="costa_rica" & dat$timestamp > max(animals$timestamp_end, na.rm=T)-336*60*60 & !(dat$taxon_canonical_name %in% c("Cathartes aura" ,"Cathartes melambrotus", "Sarcoramphus papa", "Coragyps atratus")),]
-
-tmp_cr_48 <- rbind(tmp_48, tmp_cr_48)
-
-
-
-tmp_cr_48$name <- as.character(tmp_cr_48$name)
-#table(dat$taxon_canonical_name)
-# Remake shapefiles
-lfc <- do.call(st_sfc,
-              lapply(split(tmp_cr_48, tmp_cr_48$name),
-                     function(d){st_linestring(as.matrix(d[,c("location_long", "location_lat")]))}))
-tmp_cr_48_shp <- st_sf(data.frame(name=levels(factor(tmp_cr_48[,"name"])), geom=lfc))
-
-# add back in the metadata
-tmp_cr_48_shp  <- left_join(tmp_cr_48_shp,sp_dat)
-
-
-
-
-
-# First lets choose a category to colour
-tmp_cr_48[,"name"] <- factor(tmp_cr_48[,"name"])
-tmp_cr_48_shp$name <- factor(tmp_cr_48_shp$name)
-
-col.cat <- turbo(length(levels(tmp_cr_48[,"name"])))
-# Add it to the dataframe
-tmp_cr_48$colours <- col.cat[tmp_cr_48[,"name"]]
-tmp_cr_48_shp$colours <- col.cat[tmp_cr_48_shp$name]
-
-```
-
-We currently have `r length(unique(tmp_cr$name))` devices actively transmitting data in Costa Rica:
-
-```{r, echo=F}
-# New map
-ids <- tmp_cr_48_shp$name
-i <- 1
-m <- leaflet() %>%
-  # Add a satellite image layer
-  addProviderTiles(providers$CartoDB.PositronNoLabels, group="Simple") %>%
-  addProviderTiles(providers$Esri.WorldImagery, group="Satellite") %>%
-  addProviderTiles(providers$OpenStreetMap.Mapnik, group="OS") #%>%     
-
-  for (i in seq(along=ids))
-    {
-      m <- m %>%
-        addPolylines(data = tmp_cr_48_shp[i,], color = tmp_cr_48_shp$colours[i], group = ids[i], weight=2,opacity=0.5)         %>%
-        
-        # All points
-        addCircleMarkers(lng=tmp_cr_48$location_long[tmp_cr_48$name==ids[i]],
-                         lat=tmp_cr_48$location_lat[tmp_cr_48$name==ids[i]], 
-                         
-                         popup=paste(tmp_cr_48$local_identifier[tmp_cr_48$name==ids[i]],
-                                     "<br>Time:",tmp_cr_48$timestamp[tmp_cr_48$name==ids[i]],
-                                     "<br>Long:",tmp_cr_48$location_long[tmp_cr_48$name==ids[i]],
-                                     "<br>Lat:",tmp_cr_48$location_lat[tmp_cr_48$name==ids[i]]),
-                         
-                         fillOpacity = 0.3, opacity = 0.5, radius=3, color = tmp_cr_48_shp$colours[i], group = ids[i], stroke=F) %>%
-        
-        # The last point
-        addMarkers(lng=last(tmp_cr_48$location_long[tmp_cr_48$name==ids[i]]),
-                         lat=last(tmp_cr_48$location_lat[tmp_cr_48$name==ids[i]]), 
-                         popup=paste(last(tmp_cr_48$local_identifier[tmp_cr_48$name==ids[i]]),
-                                     "<br>Time:",last(tmp_cr_48$timestamp[tmp_cr_48$name==ids[i]]),
-                                     "<br>Long:",last(tmp_cr_48$location_long[tmp_cr_48$name==ids[i]]),
-                                     "<br>Lat:",last(tmp_cr_48$location_lat[tmp_cr_48$name==ids[i]])),
-                   icon = iconSet[tmp_cr_48$icon[tmp_cr_48$name==ids[i]][1]], group=ids[i]) #, fillOpacity = 1, opacity = 1, radius=5, color = tmp_cr_48_shp$colours[i], group = ids[i], stroke=F
-    }
-
-  m <- m %>%
-      # Add survey location
-      addMarkers(lng=cr_locs$longitude,
-                         lat=cr_locs$latitude, 
-                         popup=cr_locs$location_code) %>% 
-      #addLegend(position= "topright", colors=tmp_cr_48_shp$colours, 
-      #          labels=ids ,opacity = 0.7, title = "Animals") %>%
-      addScaleBar(position="topleft", 
-                  options=scaleBarOptions(maxWidth = 100, metric = TRUE, imperial = FALSE, updateWhenIdle = TRUE)) %>%
-      addLayersControl(
-        baseGroups = c("Simple", "OS", "Satellite"),
-        overlayGroups = ids,
-        options = layersControlOptions(collapsed = FALSE)
-      ) %>%
-  addFullscreenControl()
-  
-m 
-```
-
-
-### Peru
-
-```{r, echo=F, message=F, warning=F}
-# Subset to 48 hours
-tmp_peru_48 <- dat[dat$country=="peru" & dat$timestamp > max(ymd_hms(animals$timestamp_end),na.rm=T)-48*60*60,]
-
-tmp_peru_48$name <- as.character(tmp_peru_48$name)
-
-# Remake shapefiles
-lfc <- do.call(st_sfc,
-              lapply(split(tmp_peru_48, tmp_peru_48$name),
-                     function(d){st_linestring(as.matrix(d[,c("location_long", "location_lat")]))}))
-tmp_peru_48_shp <- st_sf(data.frame(name=levels(factor(tmp_peru_48[,"name"])), geom=lfc))
-
-# add back in the metadata
-tmp_peru_48_shp  <- left_join(tmp_peru_48_shp,sp_dat)
-
-
-# First lets choose a category to colour
-tmp_peru_48[,"name"] <- factor(tmp_peru_48[,"name"])
-tmp_peru_48_shp$name <- factor(tmp_peru_48_shp$name)
-
-col.cat <- turbo(length(levels(tmp_peru_48[,"name"])))
-# Add it to the dataframe
-tmp_peru_48$colours <- col.cat[tmp_peru_48[,"name"]]
-tmp_peru_48_shp$colours <- col.cat[tmp_peru_48_shp$name]
-
-```
-
-We currently have `r length(unique(tmp_peru$name))` devices transmitting data in Peru:
-
-```{r, echo=F}
-# New map
-ids <- tmp_peru_48_shp$name
-i <- 1
-m <- leaflet() %>%
-  # Add a satellite image layer
-
-  addProviderTiles(providers$CartoDB.PositronNoLabels, group="Simple") %>%
-
-  addProviderTiles(providers$Esri.WorldImagery, group="Satellite") %>%
-  addProviderTiles(providers$OpenStreetMap.Mapnik, group="OS") #%>%     
-
-  for (i in seq(along=ids))
-    {
-      m <- m %>%
-        addPolylines(data = tmp_peru_48_shp[i,], color = tmp_peru_48_shp$colours[i], group = ids[i], weight=3,opacity=0.3)         %>%
-        addCircleMarkers(lng=tmp_peru_48$location_long[tmp_peru_48$name==ids[i]],
-                         lat=tmp_peru_48$location_lat[tmp_peru_48$name==ids[i]], 
-                         
-                          
-                         
-                         popup=paste(tmp_peru_48$local_identifier[tmp_peru_48$name==ids[i]],
-                                     "<br>Time:",tmp_peru_48$timestamp[tmp_peru_48$name==ids[i]],
-                                     "<br>Long:",tmp_peru_48$location_long[tmp_peru_48$name==ids[i]],
-                                     "<br>Lat:",tmp_peru_48$location_lat[tmp_peru_48$name==ids[i]]),
-                         
-                         
-                         fillOpacity = 0.3, opacity = 0.5, radius=2, color = tmp_peru_48_shp$colours[i], group = ids[i], stroke=F) %>%
-        addCircleMarkers(lng=last(tmp_peru_48$location_long[tmp_peru_48$name==ids[i]]),
-                         lat=last(tmp_peru_48$location_lat[tmp_peru_48$name==ids[i]]), 
-                         popup=paste(last(tmp_peru_48$timestamp[tmp_peru_48$name==ids[i]])),
-                         fillOpacity = 1, opacity = 1, radius=5, color = tmp_peru_48_shp$colours[i], group = ids[i], stroke=F) %>%
-        
-        # The last point
-        addMarkers(lng=last(tmp_peru_48$location_long[tmp_peru_48$name==ids[i]]),
-                         lat=last(tmp_peru_48$location_lat[tmp_peru_48$name==ids[i]]), 
-                         popup=paste(last(tmp_peru_48$local_identifier[tmp_peru_48$name==ids[i]]),
-                                     "<br>Time:",last(tmp_peru_48$timestamp[tmp_peru_48$name==ids[i]]),
-                                     "<br>Long:",last(tmp_peru_48$location_long[tmp_peru_48$name==ids[i]]),
-                                     "<br>Lat:",last(tmp_peru_48$location_lat[tmp_peru_48$name==ids[i]])),
-                   icon = iconSet[tmp_peru_48$icon[tmp_peru_48$name==ids[i]][1]], group=ids[i])
-    }
-
-  m <- m %>%
-      # Add survey location
-      addMarkers(lng=pe_locs$longitude,
-                         lat=pe_locs$latitude, 
-                         popup=pe_locs$location_code) %>% 
-      #addLegend(position= "topright", colors=tmp_peru_48_shp$colours, 
-      #          labels=ids ,opacity = 0.7, title = "Animals") %>%
-      addScaleBar(position="topleft", 
-                  options=scaleBarOptions(maxWidth = 100, metric = TRUE, imperial = FALSE, updateWhenIdle = TRUE)) %>%
-      addLayersControl(
-        baseGroups = c("Simple", "OS", "Satellite"),
-        overlayGroups = ids,
-        options = layersControlOptions(collapsed = FALSE)
-      ) %>%
-  addFullscreenControl()
-  
-m 
-```
-
-
-### Ecuador
 
 ```{r, echo=F, message=F, warning=F}
 # Subset to 48 hours
@@ -1007,7 +508,7 @@ m
 
 # Cluster detection
 
-The following map shows all of the vulture clusters which have occurred in the previous 72 hours. This map should be checked daily to find potential feeding sites for visual confirmation. The field team should:
+The following map shows all of the vulture clusters which have occurred in the previous week. This map should be checked daily to find potential feeding sites for visual confirmation. The field team should:
 
 - Prioritize recent clusters - we are more likely to find a carcass if a vulture was feeding recently
 
@@ -1019,28 +520,23 @@ Key:
 
 - Colored circles denote clusters of > than 1 hour duration, where the vultures have low distances travelled
 
-- The colors denote how recently the cluster started (Red >24 hours; orange 24-48 hours; blue 48-72 hours)
+- The colors denote how recently the cluster started (Red >24 hours; orange 24-48 hours; blue 48+ hours)
 
 - Hover over the circle for gps coordinates, cluster radius, number of points in the cluster and duration of the event
 
-### Costa Rica
-```{r, eval=T, echo=F, message=F, warning=F}
-# Code derived from
-# https://github.com/movestore/Daily-Rest-Sites
-#library('maptools')
-#library('ggmap')
 
+```{r, eval=T, echo=F, message=F, warning=F}
 
 # Subset to costa rica and vultures
-sub_dat <- mov_dat[mov_dat$location_lat>0 ,]
+sub_dat <- mov_dat
 
 # Just pull last 3 days
-start_t2 <- t-as.difftime(3,units='days')
+start_t2 <- t-as.difftime(7,units='days')
 sub_dat <- sub_dat[sub_dat$timestamp>start_t2,]
 
 sub_dat$speed <- unlist(lapply(move::speed(sub_dat),c, NA ))
 sub_dat_df <- as.data.frame(sub_dat)
-sub_dat_df <- left_join(sub_dat_df, animals[, c("tag_id", "name", "taxon_canonical_name")])
+sub_dat_df <- left_join(sub_dat_df, animals[, c("tag_id", "animalName", "taxon_canonical_name")])
 
 # Subset to just vultures
 sub_dat_df <- sub_dat_df[sub_dat_df$taxon_canonical_name %in% c("Cathartes aura", "Sarcoramphus papa", "Coragyps atratus", "Cathartes melambrotus"),]
@@ -1067,11 +563,13 @@ dat_shp <- st_sf(data.frame(name=levels(factor(sub_dat_df[,"name"])), geom=lfc))
 
 # add back in the metadata
 dat_shp  <- left_join(dat_shp,sp_dat)
-
+dat_shp$name <- gsub("^.*\\.","", dat_shp$name )
 # Bring in the colours from earlier
-cr_cols <- tmp_cr[, c("name", "colours")]
-cr_cols <- cr_cols[duplicated(cr_cols)==F,]
-dat_shp <- left_join(dat_shp, cr_cols)
+ecuador_cols <- tmp_ecuador[, c("name", "colours")]
+ecuador_cols <- ecuador_cols[duplicated(ecuador_cols)==F,]
+dat_shp <- left_join(dat_shp, ecuador_cols)
+dat_shp$country <- "ecuador"
+dat_shp$taxon_canonical_name <- "Sarcoramphus papa"
 # Make shapefile of the tracks to add later
 
 #plot(sub_dat_df$ground_speed, sub_dat_df$speed)
@@ -1574,556 +1072,6 @@ The following is a list of all of the clusters in the above map, ordered by age 
 
 ```
 
-
-### Peru
-```{r, eval=T, echo=F, message=F, warning=F}
-# Code derived from
-# https://github.com/movestore/Daily-Rest-Sites
-#library('maptools')
-#library('ggmap')
-
-# Subset to costa rica and vultures
-sub_dat <- mov_dat[mov_dat$location_lat<(-6) ,]
-
-# Just pull last 3 days
-start_t2 <- t-as.difftime(3,units='days')
-sub_dat <- sub_dat[sub_dat$timestamp>start_t2,]
-
-sub_dat$speed <- unlist(lapply(move::speed(sub_dat),c, NA ))
-sub_dat_df <- as.data.frame(sub_dat)
-sub_dat_df <- left_join(sub_dat_df, animals[, c("tag_id", "name", "taxon_canonical_name")])
-
-# Subset to just vultures
-sub_dat_df <- sub_dat_df[sub_dat_df$taxon_canonical_name %in% c("Cathartes aura", "Sarcoramphus papa", "Coragyps atratus", "Cathartes melambrotus"),]
-
-
-sub_dat_df <- sub_dat_df[order(sub_dat_df$name),]
-
-# Add in icon column
-sub_dat_df$icon <- sub(".*? ", "", sub_dat_df$taxon_canonical_name)
-
-
-
-
-lfc <- do.call(st_sfc,
-              lapply(split(sub_dat_df, sub_dat_df$name),
-                     function(d){st_linestring(as.matrix(d[,c("location_long", "location_lat")]))}))
-dat_shp <- st_sf(data.frame(name=levels(factor(sub_dat_df[,"name"])), geom=lfc))
-
-#plot(st_geometry(dat_shp))
-
-#
-#plot(dat$location_long[dat$country=="costa_rica"], dat$location_lat[dat$country=="costa_rica"])
-#plot(st_geometry(dat_shp), add=T)
-
-# add back in the metadata
-dat_shp  <- left_join(dat_shp,sp_dat)
-
-# Bring in the colours from earlier
-pe_cols <- tmp_peru[, c("name", "colours")]
-pe_cols <- pe_cols[duplicated(pe_cols)==F,]
-dat_shp <- left_join(dat_shp, pe_cols)
-# Make shapefile of the tracks to add later
-
-#plot(sub_dat_df$ground_speed, sub_dat_df$speed)
-#plot(sub_dat_df$ground_speed, sub_dat_df$height_above_ellipsoid)
-
-#plot(sub_dat, col=as.numeric(sub_dat$ground_speed<1)+1)
-#plot(sub_dat[sub_dat$ground_speed<1,], add=T)
-
-
-
-# Specifiy the settings
-
-data=sub_dat
-window="sunupdown"
-upX=0
-downX=0
-speedvar="speed"
-maxspeed=0.2
-
-duration=1.2
-radius=100
-
-
-#rFunction <- function(data, window="all", upX=0, downX=0, speedvar="speed", maxspeed=NULL, duration=NULL, radius=NULL)
-#{
-  Sys.setenv(tz="America/Costa_Rica")
-  
-  names(data) <- make.names(names(data),allow_=FALSE)
-  
-  # add species info
-  data.df <- as.data.frame(data)
-  names(data.df) <- make.names(names(data.df),allow_=FALSE)
-  #if (any(names(data.df)=="individual.taxon.canonical.name")) data@data$species <- data.df$individual.taxon.canonical.name
-  data@data$species <- data.df$taxon.canonical.name
-  
-  speedx <- function(x) #input move object
-  {
-    N <- length(x)
-    distVincentyEllipsoid(coordinates(x))/as.numeric(difftime(timestamps(x)[-1],timestamps(x)[-N],units="secs"))
-  }
-
-  n.all <- length(timestamps(data))
-  data <- data[!duplicated(paste0(round_date(timestamps(data), "5 mins"), trackId(data))),]
-  
-    data.split <- move::split(data)
-    data.ground <- foreach(datai = data.split) %do% {
-        if (speedvar=="speed") 
-        {
-          if (length(datai)>1) #cannot calculated between-loc speed if only one location, therefore keep
-          {
-            ix <- which(speedx(datai)<maxspeed)
-            res <- datai[sort(unique(c(ix,ix+1))),]#this uses the speed between positions
-          } else
-          {
- #           logger.info("One of your tracks contains only one location, so between-location speed cannot be calculated. The location is kept in the data set, but might corrupt the results.")
-            res <- datai
-          }
-        } else if (speedvar %in% names(datai)) 
-        {
-          res <- datai[datai@data[,speedvar]<maxspeed | is.na(datai@data[,speedvar]),] # this allows also NA speed to be selected
-#          logger.info("Your speed variable contains NA, these are kept in the data set of rest positions.")
-        } else 
-        {
-#          logger.info("You have not selected a viable speed variable. Therefore the fallback between location speed is calculated.")
-          if (length(datai)>1)
-          {
-            ix <- which(speedx(datai)<maxspeed)
-            res <- datai[sort(unique(c(ix,ix+1))),]#this uses the speed between positions
-          } else
-          {
-#            logger.info("One of your tracks contains only one location, so between-location speed cannot be calculated. The location is kept in the data set, but might corrupt the results.")
-            res <- datai
-          }
-        }
-        res
-    }
-    names(data.ground) <- names(data.split)
-    data.ground <- moveStack(data.ground[unlist(lapply(data.ground, length) > 0)])
-    
-    # select night or day positions (use data.ground, call it "night")
-    data.ground.split <- move::split(data.ground)
-    data.night <- foreach(data.groundi = data.ground.split) %do% {
-      #print(namesIndiv(data.groundi))
-      sunupx <- data.frame(sunriset(coordinates(data.groundi), timestamps(data.groundi), direction="sunrise", POSIXct.out=TRUE))$time + upX*60
-      sundownx <- data.frame(sunriset(coordinates(data.groundi), timestamps(data.groundi), direction="sunset", POSIXct.out=TRUE))$time + downX*60
-      data.groundi@data <- cbind(data.groundi@data,sunupx,sundownx)
-
-      ix <- which(is.na(sunupx) | is.na(sundownx))
-      
-      ix_ArcSum <- ix[coordinates(data.groundi)[ix,2]>50 & as.POSIXlt(timestamps(data.groundi[ix,]))$mon %in% c(4:8)]
-      ix_ArcWin <- ix[coordinates(data.groundi)[ix,2]>50 & as.POSIXlt(timestamps(data.groundi[ix,]))$mon %in% c(10:11,0:2)]
-      ix_AntWin <- ix[coordinates(data.groundi)[ix,2]<(-50) & as.POSIXlt(timestamps(data.groundi[ix,]))$mon %in% c(4:8)]
-      ix_AntSum <- ix[coordinates(data.groundi)[ix,2]<(-50) & as.POSIXlt(timestamps(data.groundi[ix,]))$mon %in% c(10:11,0:2)]
-      
-      if (window=="all")
-      {
-        data.nighti <- data.groundi
-        year <- as.POSIXlt(timestamps(data.nighti))$year+1900
-        yday <- as.POSIXlt(timestamps(data.nighti))$yday
-        data.nighti@data <- cbind(data.nighti@data,year,yday)
-      } else
-      {
-        if (window=="sundownup") #night roosts
-        {
-          if (length(ix_ArcSum)>0)
-          {
- #           logger.info(paste0("The data set of individual ",namesIndiv(data.groundi)," includes positions above the Arctic circle, so there are no sunup or sundown events during some time of the year. The relevant ",length(ix_ArcSum)," northern summer positions without 'night' (May-Sep) are taken out for the calculations."))
-            data.groundi <- data.groundi[-ix_ArcSum,]
-          }
-          if (length(ix_AntSum)>0)
-          {
- #           logger.info(paste0("The data set of individual ",namesIndiv(data.groundi)," includes positions below the Antarctic circle, so there are no sunup or sundown events during some time of the year. The relevant ",length(ix_AntSum)," southern summer positions without 'night' (Nov-Mar) are taken out for the calculations."))
-            data.groundi <- data.groundi[-ix_AntSum,]
-          }
-          
-          if (length(ix_ArcWin)>0 & length(ix_AntWin)>0)
-          {
- #           logger.info(paste0("The data set of individual ",namesIndiv(data.groundi)," includes positions above the Arctic circle and below the Antarctic circle, so there are no sunup or sundown events during some time of the year. The relevant ",length(ix_ArcWin)," northern winter positions without 'day' (Nov-Mar) and", length(ix_AntWin), " southern winter positions without 'day' (May-Sep) are kept in the data fully."))
-            data.groundi.ND <- data.groundi[-c(ix_ArcWin,ix_AntWin),]
-            ix.ND <- seq(along=data.groundi)[-c(ix_ArcWin,ix_AntWin)]
-            selND <- which(timestamps(data.groundi.ND)<=data.groundi.ND$sunupx | timestamps(data.groundi.ND)>=data.groundi.ND$sundownx)
-            data.nighti <- data.groundi[sort(c(ix.ND[selND],ix_ArcWin,ix_AntWin)),]
-          } else if (length(ix_ArcWin)>0 & length(ix_AntWin)==0)
-          {
- #           logger.info(paste0("The data set of individual ",namesIndiv(data.groundi)," includes positions above the Arctic circle, so there are no sunup or sundown events during some time of the year. The relevant ",length(ix_ArcWin)," northern winter positions without 'day' (Nov-Mar) are kept in the data fully."))
-            data.groundi.ND <- data.groundi[-c(ix_ArcWin),]
-            ix.ND <- seq(along=data.groundi)[-c(ix_ArcWin)]
-            selND <- which(timestamps(data.groundi.ND)<=data.groundi.ND$sunupx | timestamps(data.groundi.ND)>=data.groundi.ND$sundownx)
-            data.nighti <- data.groundi[sort(c(ix.ND[selND],ix_ArcWin)),]
-          } else if (length(ix_ArcWin)==0 & length(ix_AntWin)>0)
-          {
- #           logger.info(paste0("The data set of individual ",namesIndiv(data.groundi)," includes positions below the Antarctic circle, so there are no sunup or sundown events during some time of the year. The relevant ",length(ix_AntWin)," southern winter positions without 'day' (May-Sep) are kept in the data fully."))
-            data.groundi.ND <- data.groundi[-c(ix_AntWin),]
-            ix.ND <- seq(along=data.groundi)[-c(ix_AntWin)]
-            selND <- which(timestamps(data.groundi.ND)<=data.groundi.ND$sunupx | timestamps(data.groundi.ND)>=data.groundi.ND$sundownx)
-            data.nighti <- data.groundi[sort(c(ix.ND[selND],ix_AntWin)),]
-          } else data.nighti <- data.groundi[timestamps(data.groundi)<=data.groundi$sunupx | timestamps(data.groundi)>=data.groundi$sundownx,]
-          
-          year <- as.POSIXlt(timestamps(data.nighti))$year+1900
-          yday <- as.POSIXlt(timestamps(data.nighti))$yday
-          ynight <- yday
-          
-          ixx <- which(is.na(data.nighti$sundownx))
-          if (length(ixx)>0)
-          {
-            ynight[timestamps(data.nighti[-ixx])>data.nighti$sundownx[-ixx]] <- ynight[timestamps(data.nighti[-ixx])>data.nighti$sundownx[-ixx]]+1
-            
-            # for Arctic/Antarctic nights the night goes from midday to midday, which depends on the location..
-            midday_ixx <- solarnoon(coordinates(data.nighti[ixx]),timestamps(data.nighti[ixx]),POSIXct.out=TRUE)$time
-            ynight[timestamps(data.nighti[ixx])>midday_ixx] <- ynight[timestamps(data.nighti[ixx])>midday_ixx]+1
-          } else ynight[timestamps(data.nighti)>data.nighti$sundownx] <- ynight[timestamps(data.nighti)>data.nighti$sundownx]+1
-          
-          # adapt for New Year's Eve
-          year[as.POSIXlt(timestamps(data.nighti))$mday==31 & as.POSIXlt(timestamps(data.nighti))$mon==11 & timestamps(data.nighti)>data.nighti$sundownx] <- year[as.POSIXlt(timestamps(data.nighti))$mday==31 & as.POSIXlt(timestamps(data.nighti))$mon==11 & timestamps(data.nighti)>data.nighti$sundownx]+1
-          ynight[as.POSIXlt(timestamps(data.nighti))$mday==31 & as.POSIXlt(timestamps(data.nighti))$mon==11 & timestamps(data.nighti)>data.nighti$sundownx] <- 0
-          
-          data.nighti@data <- cbind(data.nighti@data,year,yday,ynight)
-        }
-        
-        if (window=="sunupdown") # day rests
-        {
-          if (length(ix_ArcWin)>0)
-          {
- #           logger.info(paste0("The data set of individual ",namesIndiv(data.groundi)," includes positions above the Arctic circle, so there are no sunup or sundown events during some time of the year. The relevant ",length(ix_ArcWin)," northern winter positions without 'day' (Nov-Mar) are taken out for the calculations."))
-            data.groundi <- data.groundi[-ix_ArcWin,]
-          }
-          if (length(ix_AntWin)>0)
-          {
- #           logger.info(paste0("The data set of individual ",namesIndiv(data.groundi)," includes positions below the Antarctic circle, so there are no sunup or sundown events during some time of the year. The relevant ",length(ix_AntWin)," southern winter positions without 'day' (May-Sep) are taken out for the calculations."))
-            data.groundi <- data.groundi[-ix_AntWin,]
-          }
-          
-          if (length(ix_ArcSum)>0 & length(ix_AntSum)>0)
-          {
- #           logger.info(paste0("The data set of individual ",namesIndiv(data.groundi)," includes positions above the Arctic circle and below the Antarctic circle, so there are no sunup or sundown events during some time of the year. The relevant ",length(ix_ArcSum)," northern summer positions without 'night' (May-Sep) and", length(ix_AntSum), " southern summer positions without 'night' (Nov-Mar) are kept in the data fully."))
-            data.groundi.ND <- data.groundi[-c(ix_ArcSum,ix_AntSum),]
-            ix.ND <- seq(along=data.groundi)[-c(ix_ArcSum,ix_AntSum)]
-            selND <- which(timestamps(data.groundi.ND)>=data.groundi.ND$sunupx & timestamps(data.groundi.ND)<=data.groundi.ND$sundownx)
-            data.nighti <- data.groundi[sort(c(ix.ND[selND],ix_ArcSum,ix_AntSum)),]
-          } else if (length(ix_ArcSum)>0 & length(ix_AntSum)==0)
-          {
- #           logger.info(paste0("The data set of individual ",namesIndiv(data.groundi)," includes positions above the Arctic circle, so there are no sunup or sundown events during some time of the year. The relevant ",length(ix_ArcSum)," northern summer positions without 'night' (May-Sep) are kept in the data fully."))
-            data.groundi.ND <- data.groundi[-c(ix_ArcSum),]
-            ix.ND <- seq(along=data.groundi)[-c(ix_ArcSum)]
-            selND <- which(timestamps(data.groundi.ND)>=data.groundi.ND$sunupx & timestamps(data.groundi.ND)<=data.groundi.ND$sundownx)
-            data.nighti <- data.groundi[sort(c(ix.ND[selND],ix_ArcSum)),]
-          } else if (length(ix_ArcSum)==0 & length(ix_AntSum)>0)
-          {
-#            logger.info(paste0("The data set of individual ",namesIndiv(data.groundi)," includes positions below the Antarctic circle, so there are no sunup or sundown events during some time of the year. The relevant ",length(ix_AntSum)," southern summer positions without 'night' (Nov-Mar) are kept in the data fully."))
-            data.groundi.ND <- data.groundi[-c(ix_AntSum),]
-            ix.ND <- seq(along=data.groundi)[-c(ix_AntSum)]
-            selND <- which(timestamps(data.groundi.ND)>=data.groundi.ND$sunupx & timestamps(data.groundi.ND)<=data.groundi.ND$sundownx)
-            data.nighti <- data.groundi[sort(c(ix.ND[selND],ix_AntSum)),]
-          } else data.nighti <- data.groundi[timestamps(data.groundi)>=data.groundi$sunupx & timestamps(data.groundi)<=data.groundi$sundownx,]
-          
-          year <- as.POSIXlt(timestamps(data.nighti))$year+1900
-          yday <- as.POSIXlt(timestamps(data.nighti))$yday
-          data.nighti@data <- cbind(data.nighti@data,year,yday)
-        }
-      }
-      return(data.nighti)   
-    }
-    if (is(data.night,'Move')) data.night <- moveStack(data.night,forceTz="America/Costa_Rica") #force to movestack
-    names (data.night) <- names(data.ground.split)
-    data.night.nozero <- data.night[unlist(lapply(data.night, length) > 0)]
-    
-    {
-      data.night <- moveStack(data.night.nozero)
-      data.night.df <- as.data.frame(data.night)
-      nacolx <- which(apply(data.night.df,2,function (x) all(is.na(x))))
-      if (length(nacolx)>0) data.night.df.nna <- data.night.df[,-nacolx] else data.night.df.nna <- data.night.df #remove columns with all NA
-      
-      #write.csv(data.night.df.nna,file = paste0("data_rest_selectedTime.csv"),row.names=FALSE) #csv artefakt of all ground and night (or day...) positions
-      #write.csv(data.night.df.nna,file = "data_rest_selectedTime.csv",row.names=FALSE) #csv artefakt of all ground and night (or day...) positions
-      
-      # save all rest positions if is rest by given definition (radius, duration), goes backwards for last night/day rest
-      data.night.split <- move::split(data.night)
-      
-      if (window=="all")
-      {
-        prop.rest.df <- data.frame("local.identifier"=character(),"species"=character(),"year"=numeric(),"yday"=numeric(),"timestamp.first"=character(),"timestamp.last"=character(),"rest.mean.long"=numeric(),"rest.mean.lat"=numeric(),"rest.nposi"=numeric(),"rest.duration"=numeric(),"rest.radius"=numeric())
-      } else
-      {
-        if (window=="sundownup") prop.rest.df <- data.frame("local.identifier"=character(),"species"=character(),"year"=numeric(),"ynight"=numeric(),"timestamp.first"=character(),"timestamp.last"=character(),"rest.mean.long"=numeric(),"rest.mean.lat"=numeric(),"rest.nposi"=numeric(),"rest.duration"=numeric(),"rest.radius"=numeric())
-        if (window=="sunupdown") prop.rest.df <- data.frame("local.identifier"=character(),"species"=character(),"year"=numeric(),"yday"=numeric(),"timestamp.first"=character(),"timestamp.last"=character(),"rest.mean.long"=numeric(),"rest.mean.lat"=numeric(),"rest.nposi"=numeric(),"rest.duration"=numeric(),"rest.radius"=numeric())
-      }
-      
-      data.rest <- foreach(data.nighti = data.night.split) %do% {
-#        logger.info(paste("Extracting rest sites of",namesIndiv(data.nighti)))
-        data.resti.df <- data.frame(as.data.frame(moveStack(data.nighti)),coordinates(data.nighti))[0,] #empty df to fill, moveStack to keep trackId
-        Nresti <- dim(data.resti.df)[2]
-        names(data.resti.df)[(Nresti-1):Nresti] <- c("location.long","location.lat")
-        
-        year <- unique(data.nighti@data$year)
-        for (k in seq(along=year))
-        {
-          
-          data.nightik <- data.nighti[data.nighti@data$year==year[k],]
-          
-          if (window=="all")
-          {
-            night <- unique(data.nightik@data$yday)
-          } else
-          {
-            if (window=="sundownup") night <- unique(data.nightik@data$ynight)
-            if (window=="sunupdown") night <- unique(data.nightik@data$yday)
-          }
-          
-          for (j in seq(along=night))
-          {
-            
-            if (window=="all")
-            {
-              data.nightikj <- data.nightik[data.nightik@data$yday==night[j],]
-            } else
-            {
-              if (window=="sundownup") data.nightikj <- data.nightik[data.nightik@data$ynight==night[j],]
-              if (window=="sunupdown") data.nightikj <- data.nightik[data.nightik@data$yday==night[j],]
-            }
-            
-            last <- Nikj <- length(data.nightikj)
-            while (last>1) # as long as first night/day position is not the last
-            {
-              data.nightikj <- data.nightikj[1:last,]
-              backdt <- as.numeric(difftime(timestamps(data.nightikj)[last],timestamps(data.nightikj)[-c(last:Nikj)],units="hours"))
-              if (length(backdt)>=1) #changed this to allow for further away position (if in radius assume not moved), allows for worse resolution data
-              {
-                # note that here not yet checked that duration in site complete, later
-                if (any(backdt<=duration)) 
-                {
-                  data.sel <- data.nightikj[c(which(backdt<=duration),last),] 
-                  #data.sel$timestamp
-                  data.rem <- data.nightikj[-c(which(backdt<=duration),last),]
-                  #data.rem$timestamp
-                  #plot(data.nightikj$location.long, data.nightikj$location.lat)
-                  #points(data.sel$location.long, data.sel$location.lat, col="green")
-                  #points(data.rem$location.long, data.rem$location.lat, col="red")
-                  
-                } else
-                {
-                  data.sel <- data.nightikj[(last-1):last,]
-                  data.rem <- data.nightikj[-c((last-1):last),]
-                  
-                }
-                m <- colMeans(coordinates(data.sel))
-                dp0 <- distVincentyEllipsoid(m,coordinates(data.sel))
-                p0 <- coordinates(data.sel)[min(which(dp0==max(dp0))),]
-                dp1 <- distVincentyEllipsoid(p0,coordinates(data.sel))
-                p1 <- coordinates(data.sel)[min(which(dp1==max(dp1))),]
-                maxdist <- distVincentyEllipsoid(p0,p1)
-                
-                if (maxdist<radius)
-                {
-                  ## check if already longer at this rest site
-                  mid <- midPoint(p0,p1)
-                  #points(mid[1], mid[2], col="blue")
-                  data.bef <- data.rem
-                  if (length(data.bef)>=1)
-                  {
-                    dist.bef <- distVincentyEllipsoid(mid,coordinates(data.bef))
-                    if (any(dist.bef>radius))
-                    {
-                      data.selx <- data.nightikj[c(which(backdt>duration)[-(1:max(which(dist.bef>radius)))],which(backdt<=duration),last),]
-                      data.remx <- data.nightikj[-c(which(backdt>duration)[-(1:max(which(dist.bef>radius)))],which(backdt<=duration),last),]
-                      
-                    } else 
-                    {
-                      data.selx <- data.nightikj[c(which(backdt>duration),which(backdt<=duration),last),]
-                      data.remx <- data.nightikj[-c(which(backdt>duration),which(backdt<=duration),last),]
-                    }
-                  } else 
-                  {
-                    data.selx <- data.sel
-                    data.remx <- data.rem
-                  }
-                  
-                  data.selx.df <- data.frame(as.data.frame(moveStack(data.selx)),coordinates(data.selx))
-                  # Check what is in there
-                  #points(data.selx.df$location.long, data.selx.df$location.lat, col="yellow", pch=19)
-                  # looks good
-                  
-                  Nselx <- dim(data.selx.df)[2]
-                  names(data.selx.df)[(Nselx-1):Nselx] <- c("location.long","location.lat")
-                  
-                  time0 <- min(timestamps(data.selx))
-                  timeE <- max(timestamps(data.selx))
-                  durx <- as.numeric(difftime(timeE,time0,unit="hour"))
-                  radx <- max(distVincentyEllipsoid(mid,coordinates(data.selx)))
-                  
-                  if (durx>=duration & radx<=radius) #added this condition to only save rest sites of given duration (if this condition is left out also rest site with shorter duration are given back)
-                  {
-                    data.resti.df <- rbind(data.resti.df,data.selx.df)
-                    #points(data.resti.df$location.long, data.resti.df$location.lat, pch="x")
-                    
-                    
-                    if (window=="all")
-                    {
-                      prop.rest.df <- rbind(prop.rest.df,data.frame("local.identifier"=namesIndiv(data.selx),"species"=data.selx.df$species,"year"=data.selx.df$year[1],"yday"=data.selx.df$yday[1],"timestamp.first"=as.character(time0),"timestamp.last"=as.character(timeE),"rest.mean.long"=mid[1,1],"rest.mean.lat"=mid[1,2],"rest.nposi"=length(data.selx),"rest.duration"=durx,"rest.radius"=radx))
-                    } else
-                    {
-                      if (window=="sundownup") prop.rest.df <- rbind(prop.rest.df,data.frame("local.identifier"=namesIndiv(data.selx),"species"=data.selx.df$species[1],"year"=data.selx.df$year[1],"ynight"=data.selx.df$ynight[1],"timestamp.first"=as.character(time0),"timestamp.last"=as.character(timeE),"rest.mean.long"=mid[1,1],"rest.mean.lat"=mid[1,2],"rest.nposi"=length(data.selx),"rest.duration"=durx,"rest.radius"=radx))
-                      if (window=="sunupdown") prop.rest.df <- rbind(prop.rest.df,data.frame("local.identifier"=namesIndiv(data.selx),"species"=data.selx.df$species[1],"year"=data.selx.df$year[1],"yday"=data.selx.df$yday[1],"timestamp.first"=as.character(time0),"timestamp.last"=as.character(timeE),"rest.mean.long"=mid[1,1],"rest.mean.lat"=mid[1,2],"rest.nposi"=length(data.selx),"rest.duration"=durx,"rest.radius"=radx))
-                    }
-                  }
-                  
-                  
-                  data.nightikj <- data.remx
-                  #points(data.nightikj$location.long, data.nightikj$location.lat, pch="w")
-                  
-                  last <- Nikj <- length(data.nightikj) #this can be zero, will be stop indication in while() condition
-                  
-                } else last <- last-1 #shift one time step
-              } else last <- last-1 # shift one time step also if not enough data in previous Xh time frame
-            } #while
-          } #for j
-        } #for k
-        if (dim(data.resti.df)[1]>0) 
-        {
-          o <- order(data.resti.df$timestamp)
-          data.resti <- move(x=data.resti.df$location.long[o],y=data.resti.df$location.lat[o],time=as.POSIXct(data.resti.df$timestamp[o]),data=data.resti.df[o,],sensor=data.resti.df$sensor[o],animal=data.resti.df$trackId[o])
-          
-        } else data.resti <- NULL
-      }
-      names(data.rest) <- names(data.night.split)
-      data.rest.nozero <- data.rest[unlist(lapply(data.rest, length) > 0)] #remove IDs with no data
-      
-      if (length(data.rest.nozero)==0) 
-      {
-#        logger.info("Your output file contains no positions. No csv overview and plot saved. Return NULL.")
-        result <- NULL
-      } else 
-      {
-        result <- moveStack(data.rest.nozero)
-        #write.csv(prop.rest.df,file = paste0("rest_overview.csv"),row.names=FALSE) #csv artefakt
-        #write.csv(prop.rest.df,file = "rest_overview.csv",row.names=FALSE)
-        
-        
-                #map <- get_map(bbox(extent(data)),source="CartoDB.PositronNoLabels",force=TRUE)
-        
-        #data.df <- data.frame(coordinates(data),as.data.frame(moveStack(data)))
-        #names(data.df)[1:2] <- c("location.long0","location.lat0")
-        
-        #out <- ggmap(map) +
-        #  geom_path(data=data.df,aes(x=location.long0,y=location.lat0,group=trackId),colour="blue") +
-        #  geom_point(data=prop.rest.df,aes(x=rest.mean.long,y=rest.mean.lat),colour="red",size=3)
-
-                #ggsave(out, file = paste0("rest_sites_onTracks.pdf"))
-        
-        # note that all timestamps are UTC!
-      }
-    }
-  #}
-  #return(result)
-#test <- as.data.frame(result)
-#plot(result)
-#str(test)
-
-#
-clus_res <- prop.rest.df
-
-# Change cluster colours, instead of using t -> Current time. Use last movmeent location.
-
-
-
-
-# Add a colour colum
-clus_res$clus_age <- round(as.numeric(difftime(max(sub_dat$timestamp),ymd_hms(clus_res$timestamp.last), units="hours")),1)
-clus_res$col <- NA
-clus_res$col[clus_res$clus_age<24] <- "red"
-clus_res$col[clus_res$clus_age>24 & clus_res$clus_age<48] <- "orange"
-clus_res$col[clus_res$clus_age>48] <- "blue"
-
-#summary(as.numeric(clus_res$clus_age))
-
-# Convert the timestamps
-clus_res$timestamp.first <- with_tz(ymd_hms(clus_res$timestamp.first), tz="America/Costa_Rica")
-clus_res$timestamp.last <- with_tz(ymd_hms(clus_res$timestamp.last), tz="America/Costa_Rica")
-clus_res$code <- paste0(toupper(substr(clus_res$local.identifier,1,3)),"_", substr(clus_res$timestamp.first,12,13),substr(clus_res$timestamp.first,3,4),substr(clus_res$timestamp.first,6,7),substr(clus_res$timestamp.first,9,10))  
-
-
-m <- leaflet() %>%
-  # Add a satellite image layer  
-
-  addProviderTiles(providers$CartoDB.PositronNoLabels, group="Simple") %>%
-
-  addProviderTiles(providers$Esri.WorldImagery, group="Satellite") %>%
-  addProviderTiles(providers$OpenStreetMap.Mapnik, group="OS") #%>%     
-  m <- m %>%
-        addPolylines(data = dat_shp, color = dat_shp$colours, weight=3,opacity=0.3, popup=dat_shp$name) %>% 
-        addCircleMarkers(lng=clus_res$rest.mean.long,
-                         lat=clus_res$rest.mean.lat, 
-                         popup=paste("name"=clus_res$local.identifier, 
-                                     "<br>duration =",round(clus_res$rest.duration,1), "h", 
-                                     "<br>time =",substr(clus_res$timestamp.first, 12,16), "-", substr(clus_res$timestamp.last, 12,16),
-                                     "<br>npos =",clus_res$rest.nposi, " Radius =" ,round(clus_res$rest.radius,1),"m",
-                                     "<br>lon =" ,round(clus_res$rest.mean.lon,6)  , "lat =", round(clus_res$rest.mean.lat,6),
-                                     "<br>code =", clus_res$code) 
-                                     ,
-                          fillOpacity = 0.3, opacity = 0.7, radius=4, color=clus_res$col)%>%
-      addScaleBar(position="topleft", 
-                  options=scaleBarOptions(maxWidth = 100, metric = TRUE, imperial = FALSE, updateWhenIdle = TRUE)) %>%
-      addLayersControl(
-        baseGroups = c("OS", "Simple", "Satellite"),
-        options = layersControlOptions(collapsed = FALSE)
-      )  %>% 
-    addLegend(position="topright", labels=c("<24", "24-48", "48+"), colors=c("red","orange","blue"), title="Cluster age")
-
-ids <- unique(sub_dat_df$name)  
-
-  for(i in 1:length(ids))      
-        # The last point
-  m <-   m %>%   addMarkers(lng=last(sub_dat_df$location_long[sub_dat_df$name==ids[i]]),
-                         lat=last(sub_dat_df$location_lat[sub_dat_df$name==ids[i]]), 
-                         popup=paste(last(sub_dat_df$local_identifier[sub_dat_df$name==ids[i]]),
-                                     "<br>Time:",last(sub_dat_df$timestamp[sub_dat_df$name==ids[i]]),
-                                     "<br>Long:",last(sub_dat_df$location_long[sub_dat_df$name==ids[i]]),
-                                     "<br>Lat:",last(sub_dat_df$location_lat[sub_dat_df$name==ids[i]])),
-                   icon = iconSet[sub_dat_df$icon[sub_dat_df$name==ids[i]][1]], group=ids[i])%>%
-  addFullscreenControl()
-  
-  
-  m
-
-
-# Also include night'time sleep locations? Would that be useful?
-
-# Cluster map
-
-# - Nighttime locations
-# - Last 72 hours - can we colour code --> based on recent locations 
-# - Work flow
-# Open cluster tab
-# Identify accessible clusters
-  # Gps points
-  # Size of the spread
-# Make sure 
-# Cheris look at master protocol --> 
-  
-```
-
-
-The following is a list of all of the clusters in the above map, ordered by age (newest first):
-
-```{r, echo=F, warning=F, message=F, eval=T}
- tmp <- clus_res[,c("local.identifier","clus_age","timestamp.first","timestamp.last" ,"rest.mean.long", "rest.mean.lat", "rest.nposi", "rest.duration", "code")]
- tmp <- tmp[order(tmp$timestamp.first, decreasing=T),]
- tmp$date <- substr(tmp$timestamp.first,1,10)
- tmp$time.range <- paste(substr(tmp$timestamp.first,12,16), "-", substr(tmp$timestamp.last,12,16)) 
- tmp <- tmp[,c("local.identifier","clus_age","date","time.range" ,"rest.mean.long", "rest.mean.lat", "rest.nposi", "rest.duration", "code")]
- colnames(tmp) <- c("name","cluster_age_h", "date","timeRange", "long", "lat", "npos", "duration", "code")
- 
-  tmp$duration <- round(tmp$duration,1)
-
-  tmp %>%
-  kbl(row.names = FALSE) %>%
-  kable_styling()  %>%
-  kableExtra::scroll_box(width = "100%")%>%
-  kable_styling(font_size = 10.5)
-
-```
-
 # Roost and nest sites
 
 The following map shows the locations where birds spend the night. 
@@ -2138,19 +1086,17 @@ Potential nest = A bird returning to the same location through time (across mult
 
 If a birds night-time roost is does not change then the average roost spacing will be very low (<0.5 km - green rows). We should also look at the data where the average roost spacing is <1km (orange rows). All other rows are white:
 
-#### Costa Rica
-
 ```{r, eval=T, echo=F, warning=F, message=F}
-sub_dat <- mov_dat[mov_dat$location_lat>0,]
 # Remove the non-vultures
-sub_dat <- sub_dat[sub_dat$name %in% animals$name[animals$taxon_canonical_name %in% c("Cathartes aura", "Sarcoramphus papa", "Cathartes melambrotus", "Coragyps atratus" )],]
-
-
+sub_dat <- mov_dat
+sub_dat$name <- gsub("^.*\\.","", sub_dat$name )
 # remove empty levels
 sub_dat$name <- factor(sub_dat$name)
 
 
 sub_dat_df <- as.data.frame(sub_dat)
+sub_dat$name <- as.character(sub_dat$name)
+
 sub_dat_df$id <- paste0(sub_dat_df$name,"_", substr(sub_dat_df$timestamp,1,10))
 first_and_last <- sub_dat_df %>%
   group_by(id) %>%
@@ -2187,16 +1133,16 @@ night_shp <- st_sf(data.frame(name=levels(factor(first_and_last[,"name"])), geom
 st_crs(night_shp) <- 4326
 
 # Add the colours
-cr_cols <- tmp_cr[, c("name", "colours")]
-cr_cols <- cr_cols[duplicated(cr_cols)==F,]
-cr_cols$name<- sub('\\_.*', '', cr_cols$name)
+ecuador_cols <- tmp_ecuador[, c("name", "colours")]
+ecuador_cols <- ecuador_cols[duplicated(ecuador_cols)==F,]
+ecuador_cols$name<- sub('\\_.*', '', ecuador_cols$name)
 
-cr_cols$name <- as.character(cr_cols$name)
+ecuador_cols$name <- as.character(ecuador_cols$name)
 
-night_shp <- left_join(night_shp, cr_cols)
+night_shp <- left_join(night_shp, ecuador_cols)
 
-#night_dat_df <- left_join(night_dat_df, cr_cols, by=c("name"= "name"))
-first_and_last <- left_join(first_and_last, cr_cols, by=c("name"= "name"))
+#night_dat_df <- left_join(night_dat_df, ecuador_cols, by=c("name"= "name"))
+first_and_last <- left_join(first_and_last, ecuador_cols, by=c("name"= "name"))
 
 tmp <- first_and_last %>% group_by(name) %>%  dplyr::summarise(nights=n_distinct(night_id))
 night_shp <- left_join(night_shp, tmp, by=c("name"="name"))
@@ -2324,482 +1270,6 @@ m
 
 ```
 
-#### Peru
-
-```{r, eval=T, echo=F, warning=F, message=F}
-sub_dat <- mov_dat[mov_dat$location_lat<(-6),]
-# Remove the non-vultures
-sub_dat <- sub_dat[sub_dat$name %in% animals$name[animals$taxon_canonical_name %in% c("Cathartes aura", "Sarcoramphus papa", "Cathartes melambrotus", "Coragyps atratus" )],]
-
-
-# remove empty levels
-sub_dat$name <- factor(sub_dat$name)
-
-
-sub_dat_df <- as.data.frame(sub_dat)
-sub_dat_df$id <- paste0(sub_dat_df$name,"_", substr(sub_dat_df$timestamp,1,10))
-first_and_last <- sub_dat_df %>%
-  group_by(id) %>%
-  #arrange(stopSequence) %>%
-  filter(row_number()==1 | row_number()==n())
-
-#first_and_last[, c("name", "timestamp")]
-
-# Create a night column -> where each unique night has its own ID
-first_and_last$night_id <- paste0("n_", as.numeric(as.factor(substr(first_and_last$timestamp - hours(12),1,10))))
-#first_and_last[, c("name", "timestamp", "night_id")]
-# Great - remove n_1 as there should only be on observation
-
-
-
-#hist(as.numeric(substr(sub_dat$timestamp, 12,13)), breaks=seq(3.5,23.5,1))
-#hist(as.numeric(substr(night_dat$timestamp, 12,13)), breaks=seq(3.5,23.5,1))
-
-
-#plot(night_dat)
-#night_dat_df <- as.data.frame(night_dat)
-
-
-#night_dat_df <- night_dat_df[order(night_dat_df$name),]
-first_and_last <- first_and_last[order(first_and_last$name),]
-#Convert from tibble
-first_and_last <- as.data.frame(first_and_last)
-
-lfc <- do.call(st_sfc,
-              lapply(split(first_and_last, first_and_last$name),
-                     function(d){st_linestring(as.matrix(d[,c("location_long", "location_lat")]))}))
-night_shp <- st_sf(data.frame(name=levels(factor(first_and_last[,"name"])), geom=lfc))
-
-st_crs(night_shp) <- 4326
-
-# Add the colours
-pe_cols <- tmp_peru[, c("name", "colours")]
-pe_cols <- pe_cols[duplicated(pe_cols)==F,]
-pe_cols$name<- sub('\\_.*', '', pe_cols$name)
-
-pe_cols$name <- as.character(pe_cols$name)
-
-night_shp <- left_join(night_shp, pe_cols)
-
-#night_dat_df <- left_join(night_dat_df, pe_cols, by=c("name"= "name"))
-first_and_last <- left_join(first_and_last, pe_cols, by=c("name"= "name"))
-
-tmp <- first_and_last %>% group_by(name) %>%  dplyr::summarise(nights=n_distinct(night_id))
-night_shp <- left_join(night_shp, tmp, by=c("name"="name"))
-
-night_shp$roost_spacing_km <- round(as.numeric((st_length(night_shp)/1000)/night_shp$nights),1)
-
-night_shp_df <- as.data.frame(night_shp)
-night_shp_df$geometry<- NULL
-
-night_shp_df <- night_shp_df[,c("name", "roost_spacing_km"),]
-night_shp_df <- night_shp_df[order(night_shp_df$roost_spacing_km),]
-
-# Determine colours
-night_shp_df$col <- "white"
-night_shp_df$col[night_shp_df$roost_spacing_km<0.5] <- "#99d8c9"
-night_shp_df$col[night_shp_df$roost_spacing_km>0.5 & night_shp_df$roost_spacing_km<1 ] <- "#ffeda0"
-
-night_shp_df[,c("name", "roost_spacing_km")] %>%
-  kbl(row.names = FALSE) %>%
-  kable_styling()  %>% 
-  column_spec(c(1,2), background = night_shp_df$col) %>%
-  kableExtra::scroll_box(width = "100%")
-
-```
-
-You can see the distribution of the nightime locations with the following map.  Where: the points mark the first and last observations from each day, and the lines connect those points. Animals which are nesting will have a very tight cluster of points. 
-
-```{r, eval=T, echo=F}
-m <- leaflet() %>%
-  # Add a satellite image layer  
-
-  addProviderTiles(providers$CartoDB.PositronNoLabels, group="Simple") %>%
-
-  addProviderTiles(providers$Esri.WorldImagery, group="Satellite") %>%
-  addProviderTiles(providers$OpenStreetMap.Mapnik, group="OS") #%>%     
-  m <- m %>%
-        addPolylines(data = night_shp, color = night_shp$colours, weight=3,opacity=0.3, popup=night_shp$name, group=night_shp$name) %>% 
-        addCircleMarkers(lng=first_and_last$location_long,
-                         lat=first_and_last$location_lat, 
-                         popup=paste("name"=first_and_last$name, "<br>Time = ", substr(first_and_last$timestamp,12,16), "Date = ",substr(first_and_last$timestamp,1,10),
-                                  "<br>Lon = ", round(first_and_last$location_long,6), "Lat = ",round(first_and_last$location_lat,6)),
-                         fillOpacity = 0.3, opacity = 0.7, radius=4, color=first_and_last$colours)%>%
-      addScaleBar(position="topleft", 
-                  options=scaleBarOptions(maxWidth = 100, metric = TRUE, imperial = FALSE, updateWhenIdle = TRUE)) %>%
-      addLayersControl(
-        baseGroups = c("OS", "Simple", "Satellite"),
-        overlayGroups = night_shp$name,
-        options = layersControlOptions(collapsed = FALSE)
-      )%>%
-  addFullscreenControl()  #%>%
-     #addLegend(position= "topright", colors=night_shp$colours, 
-      #          labels=night_shp$name ,opacity = 0.7, title = "Animals") 
-
-  
-m
-
-
-```
-
-
-
-```{r, eval=F}
-# Heat maps
-
-#The following maps are heat maps of all of the data we have for certain individuals. Note, we do not do this for every individual as it #would mean using a lot of bandwidth each time the report updates.
-
-#CURRENTING FAILING -> UPDATING TO MOVE2
-
-
-### Juancito
-
-
-
-
-#Tapir
-
-tmp_tapir <- getMovebankData(study=1954804459, login=loginStored,  removeDuplicatedTimestamps=TRUE)
-tmp <- tmp_tapir[["Juancito"]]
-
-# Remove outliers
-#plot(tmp)
-tmp<- tmp[tmp$location_lat<8.75,]
-
-# Transform to UTM
-data2 <- spTransform(tmp, CRSobj="+proj=utm +zone=17 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs")
-#plot(data2)
-
-# Run brownian bridge
-dbbmm <- brownian.bridge.dyn(object=data2, location.error=50, dimSize=500, ext=1,
-time.step=2, margin=15)
-
-# Check
-#plot(dbbmm)
-
-# Reproject for leaflet
-test <- projectRaster(dbbmm, crs=crs("+proj=longlat +datum=WGS84 +no_defs"))
-#plot(test)
-# Filter out low probability locations
-test[test<0.0001] <- NA
-#plot(test)
-
-# Make the numbers bigger for the leaflet legend to show (may not be required for other datasets)
-test <- test*100
-
-# Make the palette
-tmp_pal <- c("#9e0142","#d53e4f","#f46d43","#fdae61","#fee08b","#e6f598","#abdda4","#66c2a5","#3288bd","#5e4fa2")
-
-
-pal <- colorNumeric(rev(tmp_pal), values(test),
-  na.color = "transparent")
-
-# Create shapefiles
-tmp_df <- as.data.frame(tmp)
-
-# Costa rica
-lfc <- do.call(st_sfc,
-              lapply(split(tmp_df, tmp_df$local_identifier),
-                     function(d){st_linestring(as.matrix(d[,c("location_long", "location_lat")]))}))
-tmp_shp <- st_sf(data.frame(name=levels(factor(tmp_df[,"local_identifier"])), geom=lfc))
-
-
-leaflet() %>%
-  addProviderTiles("OpenStreetMap", group="OSM (default)") %>%
-  addProviderTiles("Esri.WorldImagery", group="Satellite") %>%
-  addRasterImage(test, group="Raster", colors = pal, layerId="Raster") %>% 
-  addPolylines(data=tmp_shp, color = "black",
-               label = tmp_shp$NAME, group="Track",  weight=1, opacity = 0.3) %>%
-   
-   # addOpacitySlider(layerId = "Raster") %>%
-  
-  addLayersControl(
-    baseGroups = c("OSM (default)", "Satellite"),
-    overlayGroups = c("Raster", "Track"),
-    options = layersControlOptions(collapsed = FALSE)) %>%
-  addLegend(pal = pal, values = values(test),
-    title = "Time") %>%
-  addFullscreenControl()     #%>%
-  #addPolylines(data=tmp_lcp, weight = 2, fillColor = "blue",
-   #            label = tmp_lcp$ID)# %>% 
-  #addCircleMarkers(data=tmp_end, col="black", radius=1)
-
-
-```
-
-
-
-```{r, eval=F}
-### Tuva
-
-#Tapir
-tmp <- tmp_tapir[["Tuva"]]
-  
-# Remove outliers
-#plot(tmp)
-tmp<- tmp[tmp$location_lat<8.50,]
-tmp<- tmp[tmp$location_lat>8,]
-plot(tmp)
-# Transform to UTM
-data2 <- spTransform(tmp, CRSobj="+proj=utm +zone=17 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs")
-#plot(data2)
-
-# Run brownian bridge
-dbbmm <- brownian.bridge.dyn(object=data2, location.error=50, dimSize=500, ext=1,
-time.step=2, margin=5, window.size=13)
-# Change margin and window size when you have more data
-
-# Check
-#plot(dbbmm)
-
-# Reproject for leaflet
-test <- projectRaster(dbbmm, crs=crs("+proj=longlat +datum=WGS84 +no_defs"))
-#plot(test)
-# Filter out low probability locations
-test[test<0.0001] <- NA
-#plot(test)
-
-# Make the numbers bigger for the leaflet legend to show (may not be required for other datasets)
-test <- test*100
-
-# Make the palette
-tmp_pal <- c("#9e0142","#d53e4f","#f46d43","#fdae61","#fee08b","#e6f598","#abdda4","#66c2a5","#3288bd","#5e4fa2")
-
-
-pal <- colorNumeric(rev(tmp_pal), values(test),
-  na.color = "transparent")
-
-# Create shapefiles
-tmp_df <- as.data.frame(tmp)
-
-# Costa rica
-lfc <- do.call(st_sfc,
-              lapply(split(tmp_df, tmp_df$local_identifier),
-                     function(d){st_linestring(as.matrix(d[,c("location_long", "location_lat")]))}))
-tmp_shp <- st_sf(data.frame(name=levels(factor(tmp_df[,"local_identifier"])), geom=lfc))
-
-
-leaflet() %>%
-  addProviderTiles("OpenStreetMap", group="OSM (default)") %>%
-  addProviderTiles("Esri.WorldImagery", group="Satellite") %>%
-  addRasterImage(test, group="Raster", colors = pal, layerId="Raster") %>% 
-  addPolylines(data=tmp_shp, color = "black",
-               label = tmp_shp$NAME, group="Track",  weight=1, opacity = 0.3) %>%
-   
-   # addOpacitySlider(layerId = "Raster") %>%
-  
-  addLayersControl(
-    baseGroups = c("OSM (default)", "Satellite"),
-    overlayGroups = c("Raster", "Track"),
-    options = layersControlOptions(collapsed = FALSE)) %>%
-  addLegend(pal = pal, values = values(test),
-    title = "Time")  %>%
-  addFullscreenControl()    #%>%
-  #addPolylines(data=tmp_lcp, weight = 2, fillColor = "blue",
-   #            label = tmp_lcp$ID)# %>% 
-  #addCircleMarkers(data=tmp_end, col="black", radius=1)
-
-
-```
-
-
-
-
-
-```{r, eval=F}
-### Pardo
-
-# Create heatmaps using lifetime tracks
-
-#OCelot
-tmp <- getMovebankData(study=2526574641, login=loginStored,  removeDuplicatedTimestamps=TRUE)
-
-# Remove outliers
-#plot(tmp)
-tmp<- tmp[tmp$location_lat<8.75,]
-
-# Transform to UTM
-data2 <- spTransform(tmp, CRSobj="+proj=utm +zone=17 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs")
-#plot(data2)
-
-# Run brownian bridge
-dbbmm <- brownian.bridge.dyn(object=data2, location.error=50, dimSize=500, ext=1,
-time.step=2, margin=15)
-
-# Check
-#plot(dbbmm)
-
-# Reproject for leaflet
-test <- projectRaster(dbbmm, crs=crs("+proj=longlat +datum=WGS84 +no_defs"))
-
-# Filter out low probability locations
-test[test<0.00003] <- NA
-#plot(test)
-
-# Make the numbers bigger for the leaflet legend to show (may not be required for other datasets)
-test <- test*100
-
-# Make the palette
-tmp_pal <- c("#9e0142","#d53e4f","#f46d43","#fdae61","#fee08b","#e6f598","#abdda4","#66c2a5","#3288bd","#5e4fa2")
-
-
-pal <- colorNumeric(rev(tmp_pal), values(test),
-  na.color = "transparent")
-
-# Create shapefiles
-tmp_df <- as.data.frame(tmp)
-
-# Costa rica
-lfc <- do.call(st_sfc,
-              lapply(split(tmp_df, tmp_df$local_identifier),
-                     function(d){st_linestring(as.matrix(d[,c("location_long", "location_lat")]))}))
-tmp_shp <- st_sf(data.frame(name=levels(factor(tmp_df[,"local_identifier"])), geom=lfc))
-
-
-leaflet() %>%
-  addProviderTiles("OpenStreetMap", group="OSM (default)") %>%
-  addProviderTiles("Esri.WorldImagery", group="Satellite") %>%
-  addPolylines(data=tmp_shp, color = "black",
-               label = tmp_shp$NAME, group="Track",  weight=1, opacity = 0.3) %>%
-  addRasterImage(test, group="Raster", colors = pal, layerId="Raster") %>% 
-
-   
-   # addOpacitySlider(layerId = "Raster") %>%
-  
-  addLayersControl(
-    baseGroups = c("OSM (default)", "Satellite"),
-    overlayGroups = c( "Track","Raster"),
-    options = layersControlOptions(collapsed = FALSE)) %>%
-  addLegend(pal = pal, values = values(test),
-    title = "Time")   %>%
-  addFullscreenControl()   
-
-
-?addLayersControl
-```
-
-
-
-
-```{r, eval=F}
-
-# Interactions
-
-#Coming soon!
-
-library(wildlifeDI)
-
-# Vultures
-mov_dat <- getMovebankData(study=1573471517, login=loginStored,  removeDuplicatedTimestamps=TRUE)
-tmp <- mov_dat[[c("Attenborough", "Elvis")]]
-
-tmp$timestamp <- with_tz(timestamps(tmp), tz="America/Costa_Rica")
-
-#UTM
-tmp <- spTransform(tmp,CRSobj="+proj=utm +zone=17 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs")
-
-int_dat <- as(tmp,"ltraj")
-
-#plot(int_dat)
-plt <- dcPlot(int_dat,tc=15*60,dmax=1000)
-
-doecons <- conProcess(int_dat,dc=200,tc=15*60)  
-doephas <- conPhase(doecons, pc=60*60)
-conSummary(doephas)
-
-doepair <- conPairs(doephas)
-doetemp <- conTemporal(doephas,units='mins')
-
-doepair$hod <- as.POSIXlt(doepair$date)$hour + as.POSIXlt(doepair$date)$min / 60  #convert POSIX to hours
-doetemp$hod <- as.POSIXlt(doetemp$start_time)$hour + as.POSIXlt(doetemp$start_time)$min / 60  #convert POSIX to hours
-doepair$dom <- as.POSIXlt(doepair$date)$mday
-hist(doepair$dom,breaks=0:31)
-
-hist(doepair$hod,breaks=0:24) #Figure 2b
-# turn all fixes into points 
-sf_pt <- ltraj2sf(int_dat)
-con_sf <- conSpatial(doephas,type='point')             # Get points of all contacts
-
-#Figure 3a
-sf_pt <- ltraj2sf(does)  # Turn all fixes into sf points
-plot(st_geometry(sf_pt),col='grey',pch=20)
-plot(st_geometry(con_sf),col='black',pch=20,add=T)
-
-#Figure 3b
-con_sf_first <- conSpatial(doephas,type='point',def='first')
-
-plot(st_geometry(sf_pt),col='grey',pch=20)
-plot(st_geometry(con_sf),col='black',pch=20,add=T)
-plot(st_geometry(con_sf_first),col='red',pch=20,add=T)
-
-con_sf_ln <- conSpatial(doephas,type='line')
-st_crs(con_sf_ln) <- "+proj=utm +zone=17 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs"
-con_sf_ln <- st_transform(con_sf_ln, 4326)
-sf_ln <- ltraj2sf(int_dat,type='line')  # Turn all fixes into sf points
-st_crs(sf_ln) <- "+proj=utm +zone=17 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs"
-sf_ln <- st_transform(sf_ln, 4326)
-
-m <- leaflet() %>%
-  # Add a satellite image layer
-
-  addProviderTiles(providers$CartoDB.PositronNoLabels, group="Simple") %>%
-
-  addProviderTiles(providers$Esri.WorldImagery, group="Satellite") %>%
-  addProviderTiles(providers$OpenStreetMap.Mapnik, group="OS") #%>%     
-m %>% 
-addPolylines(data = sf_ln, color = c("red", "black"), weight=1,opacity=0.3) %>% 
-addPolylines(data = con_sf_ln, color = c("blue"), weight=2,opacity=0.3) %>%
-  
-      #addLegend(position= "topright", colors=tmp_cr_shp$colours, 
-       #         labels=names ,opacity = 0.7, title = "Animals") %>%
-      addScaleBar(position="topleft", 
-                  options=scaleBarOptions(maxWidth = 100, metric = TRUE, imperial = FALSE, updateWhenIdle = TRUE)) %>%
-      addLayersControl(
-        baseGroups = c("OS", "Simple", "Satellite"),
-        #overlayGroups = ids,
-        options = layersControlOptions(collapsed = FALSE)
-      ) 
-
-
-  for (i in seq(along=ids))
-    {
-      m <- m %>%
-        addPolylines(data = tmp_cr_shp[i,], color = tmp_cr_shp$colours[i], group = ids[i], weight=3,opacity=0.3)         %>%
-        addCircleMarkers(lng=tmp_cr$location_long[tmp_cr$name==ids[i]],
-                         lat=tmp_cr$location_lat[tmp_cr$name==ids[i]], 
-                         popup=paste(tmp_cr$timestamp[tmp_cr$name==ids[i]]),
-                         fillOpacity = 0.3, opacity = 0.5, radius=2, color = tmp_cr_shp$colours[i], group = ids[i], stroke=F) %>%
-        addCircleMarkers(lng=last(tmp_cr$location_long[tmp_cr$name==ids[i]]),
-                         lat=last(tmp_cr$location_lat[tmp_cr$name==ids[i]]), 
-                         popup=paste(last(tmp_cr$timestamp[tmp_cr$name==ids[i]])),
-                         fillOpacity = 1, opacity = 1, radius=5, color = tmp_cr_shp$colours[i], group = ids[i], stroke=F) %>% 
-        # Add the last point
-        addMarkers(lng=last(tmp_cr$location_long[tmp_cr$name==ids[i]]),
-                         lat=last(tmp_cr$location_lat[tmp_cr$name==ids[i]]), 
-                         popup=paste(last(tmp_cr$local_identifier[tmp_cr$name==ids[i]]),
-                                     "<br>Time:",last(tmp_cr$timestamp[tmp_cr$name==ids[i]]),
-                                     "<br>Long:",last(tmp_cr$location_long[tmp_cr$name==ids[i]]),
-                                     "<br>Lat:",last(tmp_cr$location_lat[tmp_cr$name==ids[i]])),
-                   icon = iconSet[tmp_cr$icon[tmp_cr$name==ids[i]][1]], group=ids[i]) #, fillOpacity = 1, opacity = 1, radius=5, color = tmp_cr_shp$colours[i], group = ids[i], stroke=F
-    }
-
-  m <- m %>%
-      #addLegend(position= "topright", colors=tmp_cr_shp$colours, 
-       #         labels=names ,opacity = 0.7, title = "Animals") %>%
-      addScaleBar(position="topleft", 
-                  options=scaleBarOptions(maxWidth = 100, metric = TRUE, imperial = FALSE, updateWhenIdle = TRUE)) %>%
-      addLayersControl(
-        baseGroups = c("OS", "Simple", "Satellite"),
-        overlayGroups = ids,
-        options = layersControlOptions(collapsed = FALSE)
-      ) %>%
-  addFullscreenControl()
-  
-m 
-
-```
-
-
 # Hardware function and settings
 
 The following plots track how the tags are performing in the field. 
@@ -2855,84 +1325,15 @@ fig
 ```
 
 
-### Reporting frequencies
-
-Average number of locations per day (last 14 days):
-
-```{r, echo=F}
-
-tmp <- check_in_summary[is.na(check_in_summary$locs_per_hour)==F,]
-
-fig <- plot_ly(tmp, x = ~name, y = ~locs_per_hour, type = 'bar',
-
-        marker = list(color = cols[as.factor(tmp$country)]),
-        text=paste0(tmp$name,"\n" ,tmp$country),
-        hoverinfo='text')
-
-fig <- fig %>% layout(title = "Locations per hour (last 14 days)",
-                      xaxis = list(categoryorder = "trace"),
-                      xaxis = list(title = ""),
-                      yaxis = list(title = ""))
-
-
-
-fig
-```
-
 ### Temporal activity
 *Location activity over the last 14 days*
 
 The plots below shows a point each time we have a location at a given time.
 
-#### Costa Rica
-
-```{r, echo=F}
-library(plotly)
-yform <- list(categoryorder = "array",
-              categoryarray = unique(tmp_cr$name))
-
-tmp <- tmp_cr[tmp_cr$timestamp>start_t,]
-fig <- plot_ly(x = tmp$timestamp, y = tmp$name,type="scatter",
-               height=1000, text=paste(tmp$name, tmp$timestamp), hoverinfo='text',
-               mode   = 'markers',
-               marker = list(size = 5,
-                             color = "#fc8d59",
-                             line = list(color = 'rgba(0, 0, 0, 0)',
-                                         width = 0))) %>% 
-              layout(yaxis = yform,
-                     title = "Costa Rica")
-fig
-
-```
-
-#### Peru
-
 ```{r, echo=F}
 #library(plotly)
 yform <- list(categoryorder = "array",
-              categoryarray = unique(tmp_cr$name))
-
-tmp <- tmp_peru[tmp_peru$timestamp>start_t,]
-fig <- plot_ly(x = tmp$timestamp, y = tmp$name,type="scatter",
-               height=1000, text=paste(tmp$name, tmp$timestamp), hoverinfo='text',
-               mode   = 'markers',
-               marker = list(size = 5,
-                             color = "#0099ff",
-                             line = list(color = 'rgba(0, 0, 0, 0)',
-                                         width = 0))) %>% 
-              layout(yaxis = yform,
-                     title = "Peru")
-fig
-
-```
-
-
-#### Ecuador
-
-```{r, echo=F}
-#library(plotly)
-yform <- list(categoryorder = "array",
-              categoryarray = unique(tmp_cr$name))
+              categoryarray = unique(tmp_ecuador$name))
 
 tmp <- tmp_ecuador[tmp_ecuador$timestamp>start_t,]
 fig <- plot_ly(x = tmp$timestamp, y = tmp$name,type="scatter",
