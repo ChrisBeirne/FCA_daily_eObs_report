@@ -55,8 +55,8 @@ jobs:
         run: Rscript -e "install.packages('geosphere')"
       - name: Install foreach
         run: Rscript -e "install.packages('foreach')"
-      - name: Install maptools
-        run: Rscript -e "install.packages('maptools')"
+      - name: Install suncalc
+        run: Rscript -e "install.packages('suncalc')"
       - name: Install leaflet.extras
         run: Rscript -e "install.packages('leaflet.extras')"
       - name: Render Book
