@@ -526,10 +526,6 @@ Key:
 
 
 ```{r, eval=T, echo=F, message=F, warning=F, eval=T}
-
-
-
-
 # Subset to costa rica and vultures
 sub_dat <- mov_dat
 
@@ -550,11 +546,13 @@ sub_dat_df <- sub_dat_df[order(sub_dat_df$name),]
 # Add in icon column
 sub_dat_df$icon <- sub(".*? ", "", sub_dat_df$taxon_canonical_name)
 
-
+#table(sub_dat_df$local_identifier)
+#table(is.na(sub_dat_df$location_lat))
+#table(is.na(sub_dat_df$location_long))
 
 
 lfc <- do.call(st_sfc,
-              lapply(split(sub_dat_df, sub_dat_df$name),
+              lapply(split(sub_dat_df, as.character(sub_dat_df$name)),
                      function(d){st_linestring(as.matrix(d[,c("location_long", "location_lat")]))}))
 dat_shp <- st_sf(data.frame(name=levels(factor(sub_dat_df[,"name"])), geom=lfc))
 
